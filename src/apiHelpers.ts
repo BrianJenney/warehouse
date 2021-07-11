@@ -1,7 +1,7 @@
 import { Response } from 'express';
 
 const throwUnlessValidReq = (
-    reqBody: any,
+    reqBody: Record<string, unknown>,
     keysToCheck: string[]
 ): string | boolean => {
     const reqBodyKeys = Object.keys(reqBody);
@@ -13,13 +13,16 @@ const throwUnlessValidReq = (
     return true;
 };
 
-const handleErrorResponse = (error: any, res: Response): void => {
+const handleErrorResponse = (
+    error: Record<string, unknown>,
+    res: Response
+): void => {
     res.status(500).send({ error: error.message || 'Oops an error occurred' });
 };
 
 interface ResponseObject {
     message: string;
-    data: any;
+    data: Record<string, unknown>;
 }
 
 const handleSuccessResponse = (

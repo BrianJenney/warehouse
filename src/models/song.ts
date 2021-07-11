@@ -10,6 +10,7 @@ interface Song {
     dislikes: string[];
     plays: number;
     url: string;
+    songCoverUrl: string;
 }
 
 const schema = new Schema<Song>({
@@ -17,6 +18,7 @@ const schema = new Schema<Song>({
     title: { type: String, required: true },
     albumId: { type: String },
     url: { type: String },
+    songCoverUrl: { type: String },
     plays: { type: Number },
     region: { type: String },
     genre: {
@@ -30,4 +32,6 @@ const schema = new Schema<Song>({
     ],
 });
 
-export const SongModel = model<Song>('Song', schema);
+const SongModel = model<Song>('Song', schema);
+
+export { SongModel, Song };

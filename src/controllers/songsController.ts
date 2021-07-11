@@ -7,7 +7,7 @@ import {
 } from '../apiHelpers';
 import { S3 } from 'aws-sdk';
 import fs from 'fs';
-import { SongModel } from '../models/song';
+import { SongModel, Song } from '../models/song';
 
 const s3 = new S3({
     accessKeyId: process.env.AWS_ACCESS_KEY,
@@ -17,10 +17,24 @@ const s3 = new S3({
 const uploadSong = async (req: Request, res: Response): Promise<void> => {
     try {
         const { songTitle, artistId, genre } = req.body;
-        const { tempFilePath } = req.files.song as UploadedFiles;
+        console.log(req.body);
+        console.log(req.files);
+        const songFile = req.files.song as UploadedFiles;
+        const songArtFile = req.files.songArt as UploadedFiles;
 
         throwUnlessValidReq(req.body, ['songTitle', 'artistId', 'genre']);
-        fs.readFile(tempFilePath, (err: Error, data: Buffer) => {
+
+        const artData: any = await fs.readFileSync(songArtFile.tempFilePath);
+
+        const songArtData: S3.ManagedUpload.SendData = await s3
+            .upload({
+                Bucket: 'slapbucket',
+                Key: `${songTitle}.jpg`,
+                Body: artData,
+            })
+            .promise();
+
+        fs.readFile(songFile.tempFilePath, (err: Error, data: Buffer) => {
             s3.upload(
                 {
                     Bucket: 'slapbucket',
@@ -35,15 +49,16 @@ const uploadSong = async (req: Request, res: Response): Promise<void> => {
                     );
 
                     SongModel.create({
-                        artistId,
+                        title: songTitle,
+                        userId: artistId,
                         url: songData.Location,
+                        songCoverUrl: songArtData.Location,
                         genre,
-                        likes: [],
+                    }).then((song: Song) => {
+                        res.send({ songTitle, song });
                     });
                 }
             );
-
-            res.send({ songTitle, artistId });
         });
     } catch (e) {
         handleErrorResponse(e, res);
