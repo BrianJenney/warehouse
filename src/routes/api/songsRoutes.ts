@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { uploadSong, getAllSongs } from '../../controllers/songsController';
+import { uploadSong, getSongsBy } from '../../controllers/songs.controller';
 
 const router = Router();
 
 router.route('/upload').post(uploadSong);
-router.route('/all/:userId').get(getAllSongs);
+router.route('/music').post(getSongsBy);
 
 export default router;

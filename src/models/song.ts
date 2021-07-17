@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 
 interface Song {
     userId: string;
+    artistName: string;
     albumId: string;
     title: string;
     genre: string;
@@ -15,12 +16,17 @@ interface Song {
 
 const schema = new Schema<Song>({
     userId: { type: String, required: true },
+    artistName: { type: String },
     title: { type: String, required: true },
     albumId: { type: String },
     url: { type: String },
     songCoverUrl: { type: String },
     plays: { type: Number },
     region: { type: String },
+    createdAt: {
+        type: Date,
+        default: new Date(),
+    },
     genre: {
         type: String,
         enum: ['rap', 'randb', 'alternative', 'pop', 'other', 'trap'],
