@@ -19,7 +19,7 @@ const getSongsByMethod = async ({
         region: {
             region,
         },
-        artist: {
+        userId: {
             artistId,
         },
         song: {
