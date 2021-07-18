@@ -175,7 +175,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/warehouse/dev/1626569025460-2021-07-18T00:43:45.460Z/warehouse.zip"
+                "S3Key": "serverless/warehouse/dev/1626569693847-2021-07-18T00:54:53.847Z/warehouse.zip"
               },
               "Handler": "dist/server.handler",
               "Runtime": "nodejs12.x",
@@ -193,14 +193,14 @@
               "AppLogGroup"
             ]
           },
-          "AppLambdaVersionX3HuJDzX25DxF0EM65OzFctQN7tn02bQtkELFYO1Tc": {
+          "AppLambdaVersionZQ8v5ELep2PCMyMgMIrx7IzRgx0KR3OJPjNRDOuSZw": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "Jki7WSD0vJVYlh1gCvpAuFNPiCmu7TgMDrTSr6rHbBA="
+              "CodeSha256": "QfXL6TR/COYcmfh0lq0ExvxB7WDg2Fpj+nURPl+Yr1s="
             }
           },
           "ApiGatewayRestApi": {
@@ -418,7 +418,7 @@
               "AppLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1626569019377": {
+          "ApiGatewayDeployment1626569687406": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -483,7 +483,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionX3HuJDzX25DxF0EM65OzFctQN7tn02bQtkELFYO1Tc"
+              "Ref": "AppLambdaVersionZQ8v5ELep2PCMyMgMIrx7IzRgx0KR3OJPjNRDOuSZw"
             },
             "Export": {
               "Name": "sls-warehouse-dev-AppLambdaFunctionQualifiedArn"
@@ -665,7 +665,7 @@
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "AppLambdaVersionX3HuJDzX25DxF0EM65OzFctQN7tn02bQtkELFYO1Tc"
+        "versionLogicalId": "AppLambdaVersionZQ8v5ELep2PCMyMgMIrx7IzRgx0KR3OJPjNRDOuSZw"
       }
     },
     "configValidationMode": "warn",
@@ -686,7 +686,7 @@
     "artifact": "/Users/brianjenney1/Desktop/apps/warehouse/.serverless/warehouse.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/warehouse/dev/1626569025460-2021-07-18T00:43:45.460Z",
+    "artifactDirectoryName": "serverless/warehouse/dev/1626569693847-2021-07-18T00:54:53.847Z",
     "artifact": "warehouse.zip"
   }
 }
