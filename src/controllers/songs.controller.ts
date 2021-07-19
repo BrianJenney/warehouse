@@ -1,49 +1,33 @@
 import { Request, Response } from 'express';
-import { UploadedFiles } from '../interfaces/files';
 import {
     handleErrorResponse,
     throwUnlessValidReq,
     handleSuccessResponse,
 } from '../apiHelpers';
-import { S3 } from 'aws-sdk';
 import { SongModel, Song } from '../models/song';
-import { getSongsByMethod, uploadSongData } from '../services/songs.service';
+import { getSongsByMethod } from '../services/songs.service';
 
 const uploadSong = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { songTitle, artistId, genre, artistName } = req.body;
-
-        const songFile = req.files.song as UploadedFiles;
-        const songArtFile = req.files.songArt as UploadedFiles;
+        const { songTitle, artistId, genre, artistName, artUrl, songUrl } =
+            req.body;
 
         throwUnlessValidReq(req.body, [
             'songTitle',
             'artistId',
             'genre',
             'artistName',
+            'artUrl',
+            'songUrl',
         ]);
-
-        const artData: S3.ManagedUpload.SendData = await uploadSongData(
-            songArtFile,
-            'slapbucket',
-            songTitle,
-            'jpg'
-        );
-
-        const songData: S3.ManagedUpload.SendData = await uploadSongData(
-            songFile,
-            'slapbucket',
-            songTitle,
-            'mp3'
-        );
 
         const song = await SongModel.create({
             title: songTitle,
             userId: artistId,
-            url: songData.Location,
+            url: songUrl,
             region: 'Bay Area',
             artistName,
-            songCoverUrl: artData.Location,
+            songCoverUrl: artUrl,
             genre,
         });
 
