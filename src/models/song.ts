@@ -31,11 +31,7 @@ const schema = new Schema<Song>({
         type: String,
         enum: ['rap', 'randb', 'alternative', 'pop', 'other', 'trap'],
     },
-    likes: [
-        {
-            userId: { type: String },
-        },
-    ],
+    likes: [{ type: String }],
 });
 
 const SongModel = model<Song>('Song', schema);

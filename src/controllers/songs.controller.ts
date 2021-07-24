@@ -5,7 +5,7 @@ import {
     handleSuccessResponse,
 } from '../apiHelpers';
 import { SongModel, Song } from '../models/song';
-import { getSongsByMethod } from '../services/songs.service';
+import { deletefromBucket, getSongsByMethod } from '../services/songs.service';
 
 const uploadSong = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -37,14 +37,35 @@ const uploadSong = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const likeSong = async (req: Request, res: Response): Promise<void> => {
+    const { songId, userId, removeLike = false } = req.body;
+    throwUnlessValidReq(req.body, ['songId', 'userId']);
+
+    const updateObj: Record<string, unknown> = removeLike
+        ? { $pull: { likes: userId } }
+        : {
+              $addToSet: { likes: userId },
+          };
+    try {
+        const song: Song = await SongModel.findByIdAndUpdate(
+            songId,
+            updateObj,
+            { new: true }
+        );
+        handleSuccessResponse(res, { song });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
 const removeSong = async (req: Request, res: Response): Promise<void> => {
     try {
         const { songId } = req.body;
 
         throwUnlessValidReq(req.body, ['songId']);
+        const songToDelete: Song = await SongModel.findById(songId);
         await SongModel.remove({ _id: songId });
-        // TODO: remove from s3 bucket
-
+        await deletefromBucket('slapbucket', songToDelete.url);
         handleSuccessResponse(res, { data: { songId } });
     } catch (e) {
         handleErrorResponse(e, res);
@@ -70,4 +91,4 @@ const getSongsBy = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { uploadSong, getSongsBy, removeSong };
+export { uploadSong, getSongsBy, removeSong, likeSong };

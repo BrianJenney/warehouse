@@ -54,4 +54,21 @@ const uploadSongData = async (
     return s3Data;
 };
 
-export { getSongsByMethod, uploadSongData };
+const deletefromBucket = async (
+    s3Bucket: 'slapbucket',
+    fileName: string
+): Promise<boolean> => {
+    try {
+        await s3
+            .deleteObject({
+                Bucket: s3Bucket,
+                Key: fileName,
+            })
+            .promise();
+        return true;
+    } catch (ex) {
+        return false;
+    }
+};
+
+export { getSongsByMethod, uploadSongData, deletefromBucket };
