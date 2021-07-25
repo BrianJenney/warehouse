@@ -58,6 +58,21 @@ const likeSong = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const addToPlays = async (req: Request, res: Response): Promise<void> => {
+    const { songId, userId } = req.body;
+    throwUnlessValidReq(req.body, ['songId', 'userId']);
+
+    const updateObj: Record<string, unknown> = {
+        $addToSet: { plays: userId },
+    };
+    try {
+        const song: Song = await SongModel.findByIdAndUpdate(songId, updateObj);
+        handleSuccessResponse(res, { song });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
 const removeSong = async (req: Request, res: Response): Promise<void> => {
     try {
         const { songId } = req.body;
@@ -91,4 +106,4 @@ const getSongsBy = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { uploadSong, getSongsBy, removeSong, likeSong };
+export { uploadSong, getSongsBy, removeSong, likeSong, addToPlays };
