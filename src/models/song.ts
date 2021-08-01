@@ -34,6 +34,9 @@ const schema = new Schema<Song>({
     likes: [{ type: String }],
 });
 
+schema.index({ name: 'text', artistName: 'text' });
+schema.index({ name: 'text', title: 'text' });
+
 const SongModel = model<Song>('Song', schema);
 
 export { SongModel, Song };
