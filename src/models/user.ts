@@ -1,5 +1,5 @@
 import { Schema, model } from 'mongoose';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 interface User {
     firstName: string;
     lastName: string;
@@ -13,6 +13,7 @@ interface User {
     artistName: string;
     socialMedia: string[];
     bio: string;
+    isValidPassword(password: string, hash: string): boolean;
 }
 
 const schema = new Schema<User>({
@@ -34,13 +35,19 @@ const schema = new Schema<User>({
     songMax: { type: Number, default: 3 },
 });
 
-schema.methods.generateHash = (password) => {
-    return bcrypt.hashSync(password, bcrypt.genSaltSync(8));
-};
+schema.pre('save', function save(next) {
+    if (!this.isModified('password')) return next();
+    try {
+        this.password = bcrypt.hashSync(this.password, bcrypt.genSaltSync(8));
+        return next();
+    } catch (err) {
+        return next(err);
+    }
+});
 
 // checking if password is valid
-schema.methods.validPassword = (password: string) => {
-    return bcrypt.compareSync(password, password);
+schema.methods.isValidPassword = (password: string, hash: string) => {
+    return bcrypt.compareSync(password, hash);
 };
 
 const UserModel = model<User>('User', schema);

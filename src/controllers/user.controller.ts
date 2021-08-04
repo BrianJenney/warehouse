@@ -8,6 +8,7 @@ const createUser = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
+    throwUnlessValidReq(req.body, ['email', 'userType', 'password']);
     try {
         const {
             firstName,
@@ -21,7 +22,7 @@ const createUser = async (
             bio,
             socialMedia = [],
         } = req.body;
-        throwUnlessValidReq(req.body, ['email', 'userType', 'password']);
+
         const newUser = await UserModel.create({
             firstName,
             lastName,
@@ -48,8 +49,8 @@ const updateUser = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
+    throwUnlessValidReq(req.body, ['userId', 'email', 'userType']);
     try {
-        throwUnlessValidReq(req.body, ['userId', 'email', 'userType']);
         const {
             firstName,
             lastName,
@@ -83,4 +84,27 @@ const updateUser = async (
     }
 };
 
-export { createUser, updateUser };
+const signIn = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    throwUnlessValidReq(req.body, ['email', 'password']);
+    try {
+        const { password, email } = req.body;
+
+        const currentUser: User = await UserModel.findOne({ email });
+
+        if (!currentUser.isValidPassword(password, currentUser.password)) {
+            throw new Error('Invalid Password');
+        }
+
+        addJwt({ email: currentUser.email }, res);
+        res.send({ user: currentUser });
+    } catch (e) {
+        handleErrorResponse(e, res);
+        next();
+    }
+};
+
+export { createUser, updateUser, signIn };
