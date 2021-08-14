@@ -8,8 +8,8 @@ const createUser = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    throwUnlessValidReq(req.body, ['email', 'userType', 'password']);
     try {
+        throwUnlessValidReq(req.body, ['email', 'userType', 'password']);
         const {
             firstName,
             lastName,
@@ -49,33 +49,36 @@ const updateUser = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    throwUnlessValidReq(req.body, ['userId', 'email', 'userType']);
     try {
-        const {
-            firstName,
-            lastName,
-            email,
-            userType,
-            avatar,
-            city,
-            state,
-            userId,
-        } = req.body;
+        throwUnlessValidReq(req.body, ['userId', 'email', 'userType']);
+        const { userId } = req.body;
 
-        const currentUser: User = await UserModel.findById(userId);
+        const currentUser: User = await UserModel.findOne({ _id: userId });
 
-        const updatedVals: User = {
-            ...currentUser,
-            firstName,
-            lastName,
-            email,
-            userType,
-            avatar,
-            city,
-            state,
-        };
+        const nonFalsyVals: Record<string, unknown> = [
+            'firstName',
+            'lastName',
+            'email',
+            'userName',
+            'avatar',
+            'city',
+            'state',
+            'userType',
+            'bio',
+            'socialMedia',
+        ].reduce((acc: Record<string, unknown>, val: string) => {
+            if (req.body[val] && req.body !== '') {
+                acc[val] = req.body[val];
+            }
+            return acc;
+        }, {});
 
-        const newUser: User = await UserModel.create(updatedVals);
+        const newUser: User = await UserModel.findByIdAndUpdate(
+            { _id: userId },
+            { ...nonFalsyVals },
+            { new: true }
+        );
+
         addJwt({ email: newUser.email }, res);
         res.send({ user: newUser });
     } catch (e) {
@@ -89,8 +92,8 @@ const signIn = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    throwUnlessValidReq(req.body, ['email', 'password']);
     try {
+        throwUnlessValidReq(req.body, ['email', 'password']);
         const { password, email } = req.body;
 
         const currentUser: User = await UserModel.findOne({ email });

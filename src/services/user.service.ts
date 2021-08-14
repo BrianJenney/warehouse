@@ -1,15 +1,17 @@
 import jwt from 'jsonwebtoken';
 import { Response } from 'express';
 
-const addJwt = (payload: Record<string, unknown>, res: Response): Response => {
-    //create the access token with the shorter lifespan
+const createJwt = (payload: Record<string, unknown>): string => {
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
         algorithm: 'HS256',
         expiresIn: process.env.ACCESS_TOKEN_LIFE,
     });
+    return accessToken;
+};
 
-    res.cookie('jwt', accessToken, { secure: true, httpOnly: true });
+const addJwt = (payload: Record<string, unknown>, res: Response): Response => {
+    res.cookie('jwt', createJwt(payload), { secure: true, httpOnly: true });
     return res;
 };
 
-export { addJwt };
+export { addJwt, createJwt };

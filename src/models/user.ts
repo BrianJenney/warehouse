@@ -1,6 +1,7 @@
 import { Schema, model } from 'mongoose';
 import bcrypt from 'bcryptjs';
 interface User {
+    _id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -25,6 +26,7 @@ const schema = new Schema<User>({
         enum: ['artist', 'user'],
         default: 'user',
     },
+    avatar: { type: String },
     userName: { type: String },
     artistName: { type: String },
     city: { type: String },

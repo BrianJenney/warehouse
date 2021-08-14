@@ -38,15 +38,15 @@ const uploadSong = async (req: Request, res: Response): Promise<void> => {
 };
 
 const likeSong = async (req: Request, res: Response): Promise<void> => {
-    const { songId, userId, removeLike = false } = req.body;
-    throwUnlessValidReq(req.body, ['songId', 'userId']);
-
-    const updateObj: Record<string, unknown> = removeLike
-        ? { $pull: { likes: userId } }
-        : {
-              $addToSet: { likes: userId },
-          };
     try {
+        throwUnlessValidReq(req.body, ['songId', 'userId']);
+        const { songId, userId, removeLike = false } = req.body;
+
+        const updateObj: Record<string, unknown> = removeLike
+            ? { $pull: { likes: userId } }
+            : {
+                  $addToSet: { likes: userId },
+              };
         const song: Song = await SongModel.findByIdAndUpdate(
             songId,
             updateObj,

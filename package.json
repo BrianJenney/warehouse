@@ -24,6 +24,7 @@
         "imagekit-javascript": "^1.4.0",
         "jsonwebtoken": "^8.5.1",
         "mongoose": "^5.13.2",
+        "nodemailer": "^6.6.3",
         "serverless-http": "^2.7.0"
     },
     "devDependencies": {
@@ -33,6 +34,7 @@
         "@types/express-fileupload": "^1.1.6",
         "@types/jsonwebtoken": "^8.5.4",
         "@types/node": "^16.0.0",
+        "@types/nodemailer": "^6.4.4",
         "@typescript-eslint/eslint-plugin": "^4.28.1",
         "@typescript-eslint/parser": "^4.28.1",
         "eslint": "^7.30.0",

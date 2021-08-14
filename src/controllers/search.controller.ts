@@ -7,8 +7,8 @@ import {
 } from '../apiHelpers';
 
 const searchSongs = async (req: Request, res: Response): Promise<void> => {
-    throwUnlessValidReq(req.body, ['query']);
     try {
+        throwUnlessValidReq(req.body, ['query']);
         const { query } = req.body;
 
         const songResponse: Song[] = await SongModel.find({
