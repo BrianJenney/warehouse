@@ -53,8 +53,6 @@ const updateUser = async (
         throwUnlessValidReq(req.body, ['userId', 'email', 'userType']);
         const { userId } = req.body;
 
-        const currentUser: User = await UserModel.findOne({ _id: userId });
-
         const nonFalsyVals: Record<string, unknown> = [
             'firstName',
             'lastName',
