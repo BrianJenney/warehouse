@@ -58,6 +58,7 @@ const updateUser = async (
             'lastName',
             'email',
             'userName',
+            'artistName',
             'avatar',
             'city',
             'state',
@@ -94,7 +95,9 @@ const signIn = async (
         throwUnlessValidReq(req.body, ['email', 'password']);
         const { password, email } = req.body;
 
-        const currentUser: User = await UserModel.findOne({ email });
+        const currentUser: User = await UserModel.findOne({ email }).select(
+            '+password'
+        );
 
         if (!currentUser.isValidPassword(password, currentUser.password)) {
             throw new Error('Invalid Password');

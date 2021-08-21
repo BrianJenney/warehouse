@@ -15,7 +15,7 @@ const getSongsByMethod = async ({
     method,
     genre,
 }: Record<string, string>): Promise<Song[]> => {
-    const queryMap: Record<string, unknown> = {
+    const queryMap: Record<string, any> = {
         region: {
             region,
         },
@@ -30,8 +30,22 @@ const getSongsByMethod = async ({
         },
     };
 
-    const query = queryMap[method];
-    const songsResponse: Song[] = await SongModel.find(query);
+    const query: Record<string, unknown> = queryMap[method];
+    const songsResponse: Song[] = await SongModel.aggregate([
+        {
+            $match: {
+                ...query,
+            },
+        },
+        {
+            $lookup: {
+                from: 'users',
+                localField: 'userId',
+                foreignField: '_id',
+                as: 'artist',
+            },
+        },
+    ]);
     return songsResponse;
 };
 

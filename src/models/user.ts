@@ -31,7 +31,7 @@ const schema = new Schema<User>({
     artistName: { type: String },
     city: { type: String },
     state: { type: String },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
     socialMedia: [{ type: String }],
     bio: { type: String, maxLength: 750 },
     songMax: { type: Number, default: 3 },
