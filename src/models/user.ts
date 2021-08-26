@@ -14,6 +14,8 @@ interface User {
     artistName: string;
     socialMedia: string[];
     bio: string;
+    lat: number;
+    lng: number;
     isValidPassword(password: string, hash: string): boolean;
 }
 
@@ -35,6 +37,8 @@ const schema = new Schema<User>({
     socialMedia: [{ type: String }],
     bio: { type: String, maxLength: 750 },
     songMax: { type: Number, default: 3 },
+    lat: { type: Number },
+    lng: { type: Number },
 });
 
 schema.pre('save', function save(next) {

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { addJwt } from '../services/user.service';
 import { throwUnlessValidReq, handleErrorResponse } from '../apiHelpers';
 import { UserModel, User } from '../models/user';
+import axios from 'axios';
 
 const createUser = async (
     req: Request,
@@ -23,6 +24,15 @@ const createUser = async (
             socialMedia = [],
         } = req.body;
 
+        const geoData: Record<string, any> = await axios.get(
+            `https://maps.googleapis.com/maps/api/geocode/json?address=${city},${state}&key=${process.env.GOOGLE_MAP_KEY}`
+        );
+
+        const [lng, lat] = [
+            geoData.data.results[0].geometry.location.lng,
+            geoData.data.results[0].geometry.location.lat,
+        ];
+
         const newUser = await UserModel.create({
             firstName,
             lastName,
@@ -34,6 +44,8 @@ const createUser = async (
             password,
             bio,
             socialMedia,
+            lng,
+            lat,
         });
 
         addJwt({ email }, res);

@@ -8,6 +8,35 @@ import {
 } from '../apiHelpers';
 import { UserModel, User } from '../models/user';
 
+const artistByRegionCount = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        const regionalData: User[] = await UserModel.aggregate([
+            {
+                $group: {
+                    _id: {
+                        city: '$city',
+                        state: '$state',
+                    },
+                    lng: { $first: '$lng' },
+                    lat: { $first: '$lat' },
+                    count: {
+                        $sum: 1,
+                    },
+                },
+            },
+        ]);
+
+        handleSuccessResponse(res, {
+            data: [...regionalData],
+        });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
 const getArtist = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.body, ['artistId']);
@@ -40,4 +69,4 @@ const getArtist = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { getArtist };
+export { getArtist, artistByRegionCount };
