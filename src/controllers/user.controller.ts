@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { addJwt } from '../services/user.service';
+import { addJwt, getUserAndSongs } from '../services/user.service';
 import { throwUnlessValidReq, handleErrorResponse } from '../apiHelpers';
 import { UserModel, User } from '../models/user';
 import axios from 'axios';
+import { SongModel, Song } from '../models/song';
 
 const createUser = async (
     req: Request,
@@ -115,8 +116,12 @@ const signIn = async (
             throw new Error('Invalid Password');
         }
 
+        const userData = await getUserAndSongs(currentUser, {
+            _id: currentUser._id,
+        });
+
         addJwt({ email: currentUser.email }, res);
-        res.send({ user: currentUser });
+        res.send({ user: { ...userData } });
     } catch (e) {
         handleErrorResponse(e, res);
         next();

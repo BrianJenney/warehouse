@@ -1,4 +1,6 @@
 import { Schema, model } from 'mongoose';
+import { Song } from '../models/song';
+
 import bcrypt from 'bcryptjs';
 interface User {
     _id: string;
@@ -16,6 +18,7 @@ interface User {
     bio: string;
     lat: number;
     lng: number;
+    songs?: Song[];
     isValidPassword(password: string, hash: string): boolean;
 }
 
@@ -34,7 +37,7 @@ const schema = new Schema<User>({
     city: { type: String },
     state: { type: String },
     password: { type: String, required: true, select: false },
-    socialMedia: [{ type: String }],
+    socialMedia: [{ type: String, minLength: 5 }],
     bio: { type: String, maxLength: 750 },
     songMax: { type: Number, default: 3 },
     lat: { type: Number },

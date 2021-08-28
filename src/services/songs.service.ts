@@ -1,5 +1,6 @@
 import { UploadedFiles } from '../interfaces/files';
 import { SongModel, Song } from '../models/song';
+import { UserModel, User } from '../models/user';
 import { S3 } from 'aws-sdk';
 import fs from 'fs';
 
@@ -14,8 +15,14 @@ const getSongsByMethod = async ({
     songId,
     method,
     genre,
+    city,
+    state,
 }: Record<string, string>): Promise<Song[]> => {
     const queryMap: Record<string, any> = {
+        cityState: {
+            city,
+            state,
+        },
         region: {
             region,
         },
@@ -31,6 +38,42 @@ const getSongsByMethod = async ({
     };
 
     const query: Record<string, unknown> = queryMap[method];
+
+    if (method === 'cityState') {
+        const songsByCityState: User[] = await UserModel.aggregate([
+            {
+                $match: {
+                    city: { $regex: city, $options: 'i' },
+                    state: { $regex: state, $options: 'i' },
+                },
+            },
+            {
+                $lookup: {
+                    from: 'songs',
+                    localField: '_id',
+                    foreignField: 'userId',
+                    as: 'songs',
+                },
+            },
+            {
+                $project: {
+                    password: 0,
+                },
+            },
+        ]);
+
+        const formattedData: Song[] = songsByCityState.reduce((acc, val) => {
+            const { songs, ...user } = val;
+            const songData: Song[] = songs.map((song: Song) => {
+                return { ...song, user: [user] };
+            });
+
+            return [...acc, ...songData];
+        }, []);
+
+        return formattedData;
+    }
+
     const songsResponse: Song[] = await SongModel.aggregate([
         {
             $match: {
@@ -46,6 +89,7 @@ const getSongsByMethod = async ({
             },
         },
     ]);
+
     return songsResponse;
 };
 

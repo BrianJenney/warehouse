@@ -9,8 +9,16 @@ import { deletefromBucket, getSongsByMethod } from '../services/songs.service';
 
 const uploadSong = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { songTitle, artistId, genre, artistName, artUrl, songUrl } =
-            req.body;
+        const {
+            songTitle,
+            artistId,
+            genre,
+            artistName,
+            artUrl,
+            songUrl,
+            city,
+            state,
+        } = req.body;
 
         throwUnlessValidReq(req.body, [
             'songTitle',
@@ -25,7 +33,8 @@ const uploadSong = async (req: Request, res: Response): Promise<void> => {
             title: songTitle,
             userId: artistId,
             url: songUrl,
-            region: 'Bay Area',
+            city,
+            state,
             artistName,
             songCoverUrl: artUrl,
             genre,
@@ -89,11 +98,21 @@ const removeSong = async (req: Request, res: Response): Promise<void> => {
 
 const getSongsBy = async (req: Request, res: Response): Promise<void> => {
     try {
-        const { userId, method, region, songId, genre } = req.body;
+        const {
+            userId,
+            method,
+            cityState = '',
+            region,
+            songId,
+            genre,
+        } = req.body;
         throwUnlessValidReq(req.body, ['method']);
 
+        const [city, state] = cityState.split(',');
         const songsResponse: Song[] = await getSongsByMethod({
             region,
+            city,
+            state,
             artistId: userId,
             songId,
             method,

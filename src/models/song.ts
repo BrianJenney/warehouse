@@ -1,4 +1,5 @@
 import { Schema, model } from 'mongoose';
+import { User } from '../models/user';
 
 interface Song {
     userId: string;
@@ -7,11 +8,14 @@ interface Song {
     title: string;
     genre: string;
     region: string;
+    city: string;
+    state: string;
     likes: string[];
     dislikes: string[];
     plays: string[];
     url: string;
     songCoverUrl: string;
+    user?: User[];
 }
 
 const schema = new Schema<Song>({
@@ -23,6 +27,8 @@ const schema = new Schema<Song>({
     songCoverUrl: { type: String },
     plays: [{ type: String }],
     region: { type: String },
+    city: { type: String },
+    state: { type: String },
     createdAt: {
         type: Date,
         default: new Date(),

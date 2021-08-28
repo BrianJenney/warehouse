@@ -65,8 +65,6 @@ const changePassword = async (req: Request, res: Response): Promise<void> => {
             { new: true }
         );
 
-        console.log(updatedUser, decoded);
-
         addJwt({ email: updatedUser.email }, res);
         handleSuccessResponse(res, { user: updateUser });
     } catch (e) {

@@ -1,5 +1,46 @@
 import jwt from 'jsonwebtoken';
 import { Response } from 'express';
+import { UserModel, User } from '../models/user';
+
+const getUserAndSongs = async (
+    user: User,
+    query: Record<string, any>
+): Promise<User> => {
+    try {
+        if (user.userType === 'artist') {
+            const userWithSongs: User[] = await UserModel.aggregate([
+                {
+                    $match: {
+                        ...query,
+                    },
+                },
+                {
+                    $lookup: {
+                        from: 'songs',
+                        localField: '_id',
+                        foreignField: 'userId',
+                        as: 'songs',
+                    },
+                },
+                {
+                    $project: {
+                        password: 0,
+                    },
+                },
+            ]);
+
+            return userWithSongs[0];
+        }
+
+        const userWithNoSongs = await UserModel.findOne({ ...query }).select(
+            '+password'
+        );
+
+        return userWithNoSongs;
+    } catch (ex) {
+        throw new Error(ex);
+    }
+};
 
 const createJwt = (payload: Record<string, unknown>): string => {
     const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
@@ -14,4 +55,4 @@ const addJwt = (payload: Record<string, unknown>, res: Response): Response => {
     return res;
 };
 
-export { addJwt, createJwt };
+export { addJwt, createJwt, getUserAndSongs };
