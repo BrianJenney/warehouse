@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import {
     handleErrorResponse,
     throwUnlessValidReq,
@@ -31,7 +32,7 @@ const uploadSong = async (req: Request, res: Response): Promise<void> => {
 
         const song = await SongModel.create({
             title: songTitle,
-            userId: artistId,
+            userId: new Types.ObjectId(artistId),
             url: songUrl,
             city,
             state,

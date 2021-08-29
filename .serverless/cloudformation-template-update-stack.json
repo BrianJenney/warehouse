@@ -207,7 +207,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/dev/1629999884437-2021-08-26T17:44:44.437Z/warehouse.zip"
+          "S3Key": "serverless/warehouse/dev/1630192975997-2021-08-28T23:22:55.997Z/warehouse.zip"
         },
         "Handler": "s_app.handler",
         "Runtime": "nodejs12.x",
@@ -225,14 +225,14 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersion82pE4Fa8MH4O6VwY23l80t9Hk4XBd3PYKO0iDlPXzo": {
+    "AppLambdaVersionPqhc6SET5Z0OFH83MzoTT9UpCGSxVRSM9s1vPP84po8": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "p0WciiIQ1jqwwdJwy81OxrLvKL//rNq9c78KkIiVc+w="
+        "CodeSha256": "NvnFDOAc9IhK7z1BusKGvGU9GdxqcytD+a1GWv7R8lI="
       }
     },
     "ApiGatewayRestApi": {
@@ -450,7 +450,7 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1629999869958": {
+    "ApiGatewayDeployment1630192963913": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -611,7 +611,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/dev/1629999884437-2021-08-26T17:44:44.437Z/custom-resources.zip"
+          "S3Key": "serverless/warehouse/dev/1630192975997-2021-08-28T23:22:55.997Z/custom-resources.zip"
         },
         "FunctionName": "warehouse-dev-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -673,7 +673,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersion82pE4Fa8MH4O6VwY23l80t9Hk4XBd3PYKO0iDlPXzo"
+        "Ref": "AppLambdaVersionPqhc6SET5Z0OFH83MzoTT9UpCGSxVRSM9s1vPP84po8"
       },
       "Export": {
         "Name": "sls-warehouse-dev-AppLambdaFunctionQualifiedArn"

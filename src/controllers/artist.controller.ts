@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { Types } from 'mongoose';
-
 import {
     throwUnlessValidReq,
     handleErrorResponse,
