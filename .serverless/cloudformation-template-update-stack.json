@@ -207,7 +207,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/dev/1630192975997-2021-08-28T23:22:55.997Z/warehouse.zip"
+          "S3Key": "serverless/warehouse/dev/1630270622582-2021-08-29T20:57:02.582Z/warehouse.zip"
         },
         "Handler": "s_app.handler",
         "Runtime": "nodejs12.x",
@@ -225,14 +225,14 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersionPqhc6SET5Z0OFH83MzoTT9UpCGSxVRSM9s1vPP84po8": {
+    "AppLambdaVersionSAFap3gATi1DBoKTCsNru7jkFTsAlxagoyitcvpb4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "NvnFDOAc9IhK7z1BusKGvGU9GdxqcytD+a1GWv7R8lI="
+        "CodeSha256": "jCVvGA09Zn4bmiBvH0kEW6VXhRQV2yOwF52UaKwcNpM="
       }
     },
     "ApiGatewayRestApi": {
@@ -450,7 +450,7 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1630192963913": {
+    "ApiGatewayDeployment1630270610133": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -611,7 +611,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/dev/1630192975997-2021-08-28T23:22:55.997Z/custom-resources.zip"
+          "S3Key": "serverless/warehouse/dev/1630270622582-2021-08-29T20:57:02.582Z/custom-resources.zip"
         },
         "FunctionName": "warehouse-dev-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -673,7 +673,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersionPqhc6SET5Z0OFH83MzoTT9UpCGSxVRSM9s1vPP84po8"
+        "Ref": "AppLambdaVersionSAFap3gATi1DBoKTCsNru7jkFTsAlxagoyitcvpb4"
       },
       "Export": {
         "Name": "sls-warehouse-dev-AppLambdaFunctionQualifiedArn"

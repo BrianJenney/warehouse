@@ -19,7 +19,7 @@ interface Song {
 }
 
 const schema = new Schema<Song>({
-    userId: { type: String, required: true },
+    userId: { type: String, required: true, ref: 'user' },
     artistName: { type: String },
     title: { type: String, required: true },
     albumId: { type: String },
