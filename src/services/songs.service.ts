@@ -65,7 +65,7 @@ const getSongsByMethod = async ({
         const formattedData: Song[] = songsByCityState.reduce((acc, val) => {
             const { songs, ...user } = val;
             const songData: Song[] = songs.map((song: Song) => {
-                return { ...song, user: [user] };
+                return { ...song, artist: [user] };
             });
 
             return [...acc, ...songData];

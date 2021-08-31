@@ -1,4 +1,4 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, Types } from 'mongoose';
 import { User } from '../models/user';
 
 interface Song {
@@ -19,7 +19,7 @@ interface Song {
 }
 
 const schema = new Schema<Song>({
-    userId: { type: String, required: true, ref: 'user' },
+    userId: { type: Types.ObjectId, required: true, ref: 'user' },
     artistName: { type: String },
     title: { type: String, required: true },
     albumId: { type: String },
