@@ -1,6 +1,7 @@
 import { UploadedFiles } from '../interfaces/files';
 import { SongModel, Song } from '../models/song';
 import { UserModel, User } from '../models/user';
+import { Types } from 'mongoose';
 import { S3 } from 'aws-sdk';
 import fs from 'fs';
 
@@ -29,8 +30,8 @@ const getSongsByMethod = async ({
         userId: {
             artistId,
         },
-        song: {
-            id: songId,
+        songId: {
+            _id: new Types.ObjectId(songId),
         },
         genre: {
             genre,
