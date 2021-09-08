@@ -106,6 +106,7 @@ const getSongsBy = async (req: Request, res: Response): Promise<void> => {
             region,
             songId,
             genre,
+            page = 1,
         } = req.body;
         throwUnlessValidReq(req.body, ['method']);
 
@@ -118,6 +119,7 @@ const getSongsBy = async (req: Request, res: Response): Promise<void> => {
             songId,
             method,
             genre,
+            page,
         });
 
         handleSuccessResponse(res, { data: songsResponse });
