@@ -6,6 +6,7 @@ import {
     handleSuccessResponse,
 } from '../apiHelpers';
 import { SongModel, Song } from '../models/song';
+import { CommentModel, Comment } from '../models/comment';
 import { deletefromBucket, getSongsByMethod } from '../services/songs.service';
 
 const uploadSong = async (req: Request, res: Response): Promise<void> => {
@@ -121,6 +122,17 @@ const getSongsBy = async (req: Request, res: Response): Promise<void> => {
             genre,
             page,
         });
+
+        if (method === 'songId') {
+            const comments: Comment[] = await CommentModel.find({
+                songId,
+            }).sort({ createdAt: -1 });
+
+            return handleSuccessResponse(res, {
+                data: songsResponse,
+                comments,
+            });
+        }
 
         handleSuccessResponse(res, { data: songsResponse });
     } catch (e) {
