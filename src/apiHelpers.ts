@@ -1,4 +1,6 @@
-import { Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+import { TokenInterface } from './interfaces/token';
 
 const throwUnlessValidReq = (
     reqBody: Record<string, unknown>,
@@ -11,6 +13,30 @@ const throwUnlessValidReq = (
     }
 
     return true;
+};
+
+const verifyAuthentication = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    console.log(req.cookies, req.headers.cookie, 'COOKIES');
+    const authToken = req.headers['authorization'];
+    if (typeof authToken !== 'undefined') {
+        const bearer = authToken.split(' ');
+        const bearerToken = bearer[1];
+
+        try {
+            jwt.verify(
+                bearerToken,
+                process.env.ACCESS_TOKEN_SECRET
+            ) as TokenInterface;
+            next();
+        } catch (e) {
+            res.sendStatus(403);
+        }
+    }
+    res.sendStatus(403);
 };
 
 const handleErrorResponse = (
@@ -36,4 +62,9 @@ const handleSuccessResponse = (
     });
 };
 
-export { throwUnlessValidReq, handleErrorResponse, handleSuccessResponse };
+export {
+    throwUnlessValidReq,
+    handleErrorResponse,
+    handleSuccessResponse,
+    verifyAuthentication,
+};
