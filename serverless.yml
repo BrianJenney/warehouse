@@ -7,7 +7,7 @@ provider:
     stage: dev
     region: us-east-1
     memorySize: 128
-    useDotEnv: true
+    useDotenv: true
 functions:
     app:
         handler: dist/server.handler
