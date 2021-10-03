@@ -61,6 +61,12 @@ const getSongsByMethod = async ({
     return songsResponse;
 };
 
+/* 
+    We are no longer using S3 to upload songs - but will keep these methods in case we would like to switch
+    at some point - currently using imagekit at the time of writing this 10/02/2021
+*/
+
+// DEPRECATED FOR NOW
 const uploadSongData = async (
     file: UploadedFiles,
     s3Bucket: 'slapbucket',
