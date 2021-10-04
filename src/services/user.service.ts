@@ -32,9 +32,9 @@ const getUserAndSongs = async (
             return userWithSongs[0];
         }
 
-        const userWithNoSongs = await UserModel.findOne({ ...query }).select(
-            '+password'
-        );
+        const userWithNoSongs: User = await UserModel.findOne({
+            ...query,
+        }).lean();
 
         return userWithNoSongs;
     } catch (ex) {
