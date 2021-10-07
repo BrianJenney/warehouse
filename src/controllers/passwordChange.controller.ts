@@ -27,10 +27,19 @@ const passwordChangeRequest = async (
         }
 
         const token: string = createJwt({ email: user.email });
+
+        const urlByEnv: Record<string, string> = {
+            STAGE: 'https://stage.d2r32nj15fzntt.amplifyapp.com',
+            PRODUCTION: 'https://master.d2r32nj15fzntt.amplifyapp.com',
+        };
+
+        const baseUrl: string =
+            urlByEnv[process.env.ENV_VAR] || 'http://localhost:3000';
+
         sendMail({
             to: email,
-            message: `Please follow this link to change your password: http://localhost:3000/passwordreset/${token}`,
-            from: 'slapjunky',
+            message: `Please follow this link to change your password: ${baseUrl}/passwordreset/${token}`,
+            from: 'neumusic@fastmail.com',
             subject: 'Reset Your Password',
         });
         handleSuccessResponse(res, { token });

@@ -3,16 +3,14 @@ import nodemailer from 'nodemailer';
 interface MailPayload {
     message: string;
     to: string;
-    from: string | 'Slapjunky';
+    from: string | 'neumusic@fastmail.com';
     subject: string;
 }
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    secure: false, // true for 465, false for other ports
+    service: 'FastMail',
     auth: {
-        user: process.env.MAIL_NAME,
+        user: 'neumusic@fastmail.com',
         pass: process.env.MAIL_PASS,
     },
 });
