@@ -23,14 +23,17 @@ const sendMail = async ({
 }: MailPayload): Promise<void> => {
     await new Promise<void>((resolve, reject) => {
         try {
+            console.log('SENDING MAIL');
             transporter.sendMail({
                 from,
                 to,
                 subject,
                 text: message,
             });
+            console.log('MAIL SENT');
             resolve();
         } catch (ex) {
+            console.log(ex);
             reject(new Error('Mail Failed to Send'));
         }
     });
