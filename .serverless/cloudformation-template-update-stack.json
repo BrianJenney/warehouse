@@ -207,7 +207,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/dev/1633715124476-2021-10-08T17:45:24.476Z/warehouse.zip"
+          "S3Key": "serverless/warehouse/dev/1633715698908-2021-10-08T17:54:58.908Z/warehouse.zip"
         },
         "Handler": "s_app.handler",
         "Runtime": "nodejs12.x",
@@ -225,14 +225,14 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersion8iP882tHcyCZwNsbfa8QkGh056rCJt8nngjXrL8js": {
+    "AppLambdaVersionXWDC2qI95x1q9nuYTgvlYI5NHFxveEqFyyZdhxcQ": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "IQDN8e3/KzOlXQvtDjQ9GOqX/GOCcnc0HDMyeeOxna8="
+        "CodeSha256": "/MtkL6ATxvlIi+H8Ogzie4v4Q8Eaovf52LrdIJw/pXQ="
       }
     },
     "ApiGatewayRestApi": {
@@ -450,7 +450,7 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1633715110473": {
+    "ApiGatewayDeployment1633715687516": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -611,7 +611,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/dev/1633715124476-2021-10-08T17:45:24.476Z/custom-resources.zip"
+          "S3Key": "serverless/warehouse/dev/1633715698908-2021-10-08T17:54:58.908Z/custom-resources.zip"
         },
         "FunctionName": "warehouse-dev-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -673,7 +673,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersion8iP882tHcyCZwNsbfa8QkGh056rCJt8nngjXrL8js"
+        "Ref": "AppLambdaVersionXWDC2qI95x1q9nuYTgvlYI5NHFxveEqFyyZdhxcQ"
       },
       "Export": {
         "Name": "sls-warehouse-dev-AppLambdaFunctionQualifiedArn"

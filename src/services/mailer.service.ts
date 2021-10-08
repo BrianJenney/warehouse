@@ -34,7 +34,7 @@ const sendMail = async ({
                 (err, info) => {
                     console.log(err);
                     if (err) reject(err);
-
+                    console.log(info);
                     resolve();
                 }
             );
