@@ -6,7 +6,9 @@
     "scripts": {
         "build": "tsc",
         "start": "tsc & node .",
-        "dev": "tsc -w & nodemon ."
+        "dev": "tsc -w & nodemon .",
+        "deploy-stage": "serverless deploy",
+        "deploy-prod": "serverless deploy --stage production"
     },
     "author": "Brian Jenney",
     "license": "ISC",
