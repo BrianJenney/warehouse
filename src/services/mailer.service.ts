@@ -24,12 +24,20 @@ const sendMail = async ({
     await new Promise<void>((resolve, reject) => {
         try {
             console.log('SENDING MAIL');
-            transporter.sendMail({
-                from,
-                to,
-                subject,
-                text: message,
-            });
+            transporter.sendMail(
+                {
+                    from,
+                    to,
+                    subject,
+                    text: message,
+                },
+                (err, info) => {
+                    console.log(err);
+                    if (err) reject(err);
+
+                    resolve();
+                }
+            );
             console.log('MAIL SENT');
             resolve();
         } catch (ex) {
