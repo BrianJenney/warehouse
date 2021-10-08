@@ -3,7 +3,6 @@ import { addJwt, getUserAndSongs } from '../services/user.service';
 import { throwUnlessValidReq, handleErrorResponse } from '../apiHelpers';
 import { UserModel, User } from '../models/user';
 import axios from 'axios';
-import { SongModel, Song } from '../models/song';
 
 const createUser = async (
     req: Request,

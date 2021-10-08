@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Types } from 'mongoose';
 import {
     handleErrorResponse,
     throwUnlessValidReq,
@@ -16,7 +15,7 @@ const createComment = async (req: Request, res: Response): Promise<void> => {
         throwUnlessValidReq(req.body, ['songId', 'userId', 'comment']);
 
         // we won't await here - no need to await a success I think???
-        addComment(newComment, res);
+        addComment(newComment);
 
         handleSuccessResponse(res, { comment });
     } catch (e) {

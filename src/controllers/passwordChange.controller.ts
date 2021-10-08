@@ -36,7 +36,7 @@ const passwordChangeRequest = async (
         const baseUrl: string =
             urlByEnv[process.env.ENV_VAR] || 'http://localhost:3000';
 
-        sendMail({
+        await sendMail({
             to: email,
             message: `Please follow this link to change your password: ${baseUrl}/passwordreset/${token}`,
             from: 'neumusic@fastmail.com',
