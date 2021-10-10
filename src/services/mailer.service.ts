@@ -39,7 +39,6 @@ const sendMail = async ({
                 }
             );
             console.log('MAIL SENT');
-            resolve();
         } catch (ex) {
             console.log(ex);
             reject(new Error('Mail Failed to Send'));
