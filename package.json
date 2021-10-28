@@ -7,6 +7,7 @@
         "build": "tsc",
         "start": "tsc & node .",
         "dev": "tsc -w & nodemon .",
+        "test": "jest --silent=false --runInBand",
         "deploy-stage": "serverless deploy",
         "deploy-prod": "serverless deploy --stage production"
     },
@@ -14,6 +15,7 @@
     "license": "ISC",
     "dependencies": {
         "@types/imagekit": "^3.1.2",
+        "@types/jest": "^27.0.2",
         "aws-sdk": "^2.939.0",
         "axios": "^0.21.1",
         "bcryptjs": "^2.4.3",
@@ -26,16 +28,20 @@
         "imagekit": "^3.2.0",
         "imagekit-javascript": "^1.4.0",
         "jsonwebtoken": "^8.5.1",
+        "mongodb": "^3.6.8",
         "mongoose": "^5.13.2",
         "nodemailer": "^6.6.3",
-        "serverless-http": "^2.7.0"
+        "serverless-http": "^2.7.0",
+        "ts-jest": "^27.0.7"
     },
     "devDependencies": {
+        "@shelf/jest-mongodb": "^2.1.0",
         "@types/bcryptjs": "^2.4.2",
         "@types/cors": "^2.8.10",
         "@types/express": "^4.17.12",
         "@types/express-fileupload": "^1.1.6",
         "@types/jsonwebtoken": "^8.5.4",
+        "@types/mocha": "^9.0.0",
         "@types/node": "^16.0.0",
         "@types/nodemailer": "^6.4.4",
         "@typescript-eslint/eslint-plugin": "^4.28.1",
@@ -43,8 +49,12 @@
         "eslint": "^7.30.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^3.4.0",
+        "jest": "^27.3.1",
+        "mocha": "^9.1.3",
         "nodemon": "^2.0.9",
         "prettier": "^2.3.2",
+        "supertest": "^6.1.6",
+        "ts-node": "^10.4.0",
         "typescript": "^4.3.5"
     }
 }

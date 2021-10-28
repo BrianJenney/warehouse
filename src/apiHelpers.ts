@@ -20,7 +20,6 @@ const verifyAuthentication = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    console.log(req.cookies, req.headers.cookie, 'COOKIES');
     const authToken = req.headers['authorization'];
     if (typeof authToken !== 'undefined') {
         const bearer = authToken.split(' ');
