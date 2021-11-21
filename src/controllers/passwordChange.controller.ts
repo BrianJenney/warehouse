@@ -39,7 +39,7 @@ const passwordChangeRequest = async (
         await sendMail({
             to: email,
             message: `Please follow this link to change your password: ${baseUrl}/resetpassword/${token}`,
-            from: 'neumusic@fastmail.com',
+            from: '3ammusic@fastmail.com',
             subject: 'Reset Your Password',
         });
         handleSuccessResponse(res, { token });

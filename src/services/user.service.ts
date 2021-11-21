@@ -51,7 +51,7 @@ const createJwt = (payload: Record<string, unknown>): string => {
 };
 
 const addJwt = (payload: Record<string, unknown>, res: Response): Response => {
-    res.cookie('jwt', createJwt(payload), { secure: true, httpOnly: true });
+    res.cookie('jwt', createJwt(payload));
     return res;
 };
 

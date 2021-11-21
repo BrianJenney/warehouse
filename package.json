@@ -7,7 +7,7 @@
         "build": "tsc",
         "start": "tsc & node .",
         "dev": "tsc -w & nodemon .",
-        "test": "jest --silent=false --runInBand",
+        "test": "jest --silent=false --runInBand --detectOpenHandles",
         "deploy-stage": "serverless deploy",
         "deploy-prod": "serverless deploy --stage production"
     },
@@ -37,6 +37,7 @@
     "devDependencies": {
         "@shelf/jest-mongodb": "^2.1.0",
         "@types/bcryptjs": "^2.4.2",
+        "@types/cookie-parser": "^1.4.2",
         "@types/cors": "^2.8.10",
         "@types/express": "^4.17.12",
         "@types/express-fileupload": "^1.1.6",
@@ -44,6 +45,7 @@
         "@types/mocha": "^9.0.0",
         "@types/node": "^16.0.0",
         "@types/nodemailer": "^6.4.4",
+        "@types/supertest": "^2.0.11",
         "@typescript-eslint/eslint-plugin": "^4.28.1",
         "@typescript-eslint/parser": "^4.28.1",
         "eslint": "^7.30.0",

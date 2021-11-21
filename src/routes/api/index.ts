@@ -6,6 +6,7 @@ import imageAuthRoutes from './imageAuthRoutes';
 import passwordRoutes from './passwordChangeRoutes';
 import artistRoutes from './artistRoutes';
 import commentsRoutes from './commentsRoutes';
+import stylesRoutes from './styleConfigRoutes';
 
 const router = Router();
 
@@ -16,5 +17,6 @@ router.use('/image', imageAuthRoutes);
 router.use('/password', passwordRoutes);
 router.use('/artist', artistRoutes);
 router.use('/comment', commentsRoutes);
+router.use('/styles', stylesRoutes);
 
 export default router;

@@ -1,10 +1,7 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { Collection, Db, MongoClient } from 'mongodb';
 import mongoose from 'mongoose';
 
 let mongo: MongoMemoryServer;
-let mongoClient: MongoClient;
-let db: Db;
 
 /**
  * 1.
