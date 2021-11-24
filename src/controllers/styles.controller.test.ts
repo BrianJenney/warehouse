@@ -1,10 +1,8 @@
-import { getConfig, addConfig, saveDraft } from './styles.controller';
 import { StyleConfigModel, StyleConfig } from '../models/styleConfig';
 import {
     StyleConfigVersion,
     StyleConfigVersionModel,
 } from '../models/styleConfigVersion';
-import { Types } from 'mongoose';
 import request from 'supertest';
 import { app } from '../../server';
 
@@ -106,6 +104,52 @@ describe('styles controller', () => {
 
             expect(res.status).toEqual(200);
             expect(configDoc.draft).toEqual(true);
+        });
+    });
+
+    describe('saveDraft', () => {
+        beforeEach(async () => {
+            await StyleConfigModel.deleteMany({});
+            await StyleConfigVersionModel.deleteMany({});
+        });
+
+        it('updates the draft to a non-draft and moves the most recent non-draft to the version model', async () => {
+            const spaceId = '123ABC';
+            const baseConfigDoc: StyleConfig = {
+                spaceid: spaceId,
+                styles: [
+                    {
+                        element: 'p',
+                        styles: ['color: red'],
+                        minWidth: 100,
+                        maxWidth: null,
+                    },
+                ],
+            };
+            const oldNonDraft = await StyleConfigModel.create(baseConfigDoc);
+            const currentDraft = await StyleConfigModel.create({
+                ...baseConfigDoc,
+                draft: true,
+            });
+
+            const res = await request(app)
+                .post('/api/styles/savedraft')
+                .send({ draftId: currentDraft._id, spaceid: spaceId });
+
+            const configDoc: StyleConfig = await StyleConfigModel.findOne({
+                spaceid: spaceId,
+            });
+
+            const versionDoc: StyleConfigVersion =
+                await StyleConfigVersionModel.findOne({
+                    spaceid: spaceId,
+                    version: 1,
+                });
+
+            expect(res.status).toEqual(200);
+            expect(configDoc._id).toEqual(currentDraft._id);
+            expect(configDoc.version).toEqual(oldNonDraft.version + 1);
+            expect(versionDoc._id).toEqual(oldNonDraft._id);
         });
     });
 });

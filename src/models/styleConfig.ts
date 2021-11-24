@@ -17,7 +17,7 @@ const schema = new Schema<StyleConfig>({
         },
     ],
     draft: { type: Boolean, default: false },
-    version: { type: Number },
+    version: { type: Number, default: 1 },
 });
 
 const StyleConfigModel = model<StyleConfig>('StyleConfig', schema);

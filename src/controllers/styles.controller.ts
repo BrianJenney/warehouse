@@ -34,6 +34,7 @@ const moveOldConfigAndStoreVersion = async (
     config: StyleConfig
 ): Promise<void> => {
     await StyleConfigVersionModel.create({
+        _id: config._id,
         spaceid: config.spaceid,
         styles: config.styles,
         version: config.version || 1,
@@ -55,9 +56,11 @@ const saveDraft = async (req: Request, res: Response): Promise<void> => {
         await StyleConfigModel.findByIdAndUpdate(draftId, {
             $set: {
                 version: oldStyle.version + 1,
+                draft: false,
             },
         });
 
+        console.log(oldStyle, draftId);
         await moveOldConfigAndStoreVersion(oldStyle);
 
         handleSuccessResponse(res, {});

@@ -2,6 +2,7 @@ import { Schema, model } from 'mongoose';
 import { StyleObject } from '../interfaces/styleObject';
 
 interface StyleConfigVersion {
+    _id?: string;
     spaceid: string;
     styles: StyleObject[];
     version: number;
