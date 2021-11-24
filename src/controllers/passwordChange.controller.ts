@@ -30,7 +30,7 @@ const passwordChangeRequest = async (
 
         const urlByEnv: Record<string, string> = {
             STAGE: 'https://stage.d2r32nj15fzntt.amplifyapp.com',
-            PRODUCTION: 'https://master.d2r32nj15fzntt.amplifyapp.com',
+            PRODUCTION: 'https://hearitfirstmusic.com',
         };
 
         const baseUrl: string =
