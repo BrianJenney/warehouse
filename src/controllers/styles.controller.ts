@@ -6,6 +6,9 @@ import {
 } from '../apiHelpers';
 import { StyleConfigModel, StyleConfig } from '../models/styleConfig';
 import { StyleConfigVersionModel } from '../models/styleConfigVersion';
+import cryptoRandomString from 'crypto-random-string';
+import { PspxUserModel, PspxUser } from '../models/pspxUser';
+import { PspxSpaceModel, PspxSpace } from '../models/pspxSpace';
 
 const getConfig = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -97,4 +100,102 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { getConfig, addConfig, saveDraft };
+const _addUserToSpace = async ({
+    userId,
+    spaceId,
+}: {
+    userId: string;
+    spaceId: string;
+}): Promise<void> => {
+    await PspxSpaceModel.findByIdAndUpdate(
+        spaceId,
+        { $addToSet: { users: userId } },
+        { new: true }
+    );
+
+    await PspxUserModel.findByIdAndUpdate(spaceId, { new: true });
+};
+
+const addUserToExistingSpace = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.body, [
+            'email',
+            'password',
+            'firstName',
+            'lastName',
+            'spaceId',
+        ]);
+
+        const { email, password, firstName, lastName, spaceId } = req.body;
+
+        const newUser: PspxUser = await PspxUserModel.create({
+            email,
+            password,
+            firstName,
+            lastName,
+        });
+
+        await _addUserToSpace({ userId: newUser._id, spaceId });
+
+        handleSuccessResponse(res, {});
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
+const addNewUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.body, [
+            'email',
+            'password',
+            'firstName',
+            'lastName',
+        ]);
+
+        const { email, password, firstName, lastName } = req.body;
+
+        const apiKey: string = cryptoRandomString(6);
+
+        const newUser: PspxUser = await PspxUserModel.create({
+            email,
+            password,
+            firstName,
+            lastName,
+        });
+
+        const newSpace: PspxSpace = await PspxSpaceModel.create({
+            spaceId: apiKey,
+            accountType: 'free',
+        });
+
+        await _addUserToSpace({ userId: newUser._id, spaceId: newSpace._id });
+
+        handleSuccessResponse(res, {});
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
+const signIn = async (req: Request, res: Response): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.body, ['email', 'password']);
+        const { password, email } = req.body;
+
+        const currentUser: PspxUser = await PspxUserModel.findOne({
+            email,
+        }).select('+password');
+
+        if (!currentUser.isValidPassword(password, currentUser.password)) {
+            throw new Error('Invalid Password');
+        }
+
+        res.send({ user: currentUser });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
+export { getConfig, addConfig, saveDraft, addNewUser, addUserToExistingSpace };
