@@ -7,6 +7,8 @@ interface StyleConfig {
     styles: StyleObject[];
     version?: number | 1;
     draft?: boolean | false;
+    createdAt: string;
+    isActive: boolean | false;
 }
 
 const schema = new Schema<StyleConfig>({
@@ -18,6 +20,8 @@ const schema = new Schema<StyleConfig>({
     ],
     draft: { type: Boolean, default: false },
     version: { type: Number, default: 1 },
+    createdAt: { type: Date, default: new Date() },
+    isActive: { type: Boolean, default: false },
 });
 
 const StyleConfigModel = model<StyleConfig>('StyleConfig', schema);

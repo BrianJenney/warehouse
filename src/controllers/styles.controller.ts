@@ -5,7 +5,10 @@ import {
     handleSuccessResponse,
 } from '../apiHelpers';
 import { StyleConfigModel, StyleConfig } from '../models/styleConfig';
-import { StyleConfigVersionModel } from '../models/styleConfigVersion';
+import {
+    StyleConfigVersion,
+    StyleConfigVersionModel,
+} from '../models/styleConfigVersion';
 import cryptoRandomString from 'crypto-random-string';
 import { PspxUserModel, PspxUser } from '../models/pspxUser';
 import { PspxSpaceModel, PspxSpace } from '../models/pspxSpace';
@@ -27,6 +30,27 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
         });
 
         handleSuccessResponse(res, { styleConfig });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
+const getAllConfigs = async (req: Request, res: Response): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.query, ['spaceid']);
+
+        const { spaceid } = req.query;
+
+        const configs: StyleConfig[] = await StyleConfigModel.find({
+            spaceid: spaceid as string,
+        });
+
+        const versions: StyleConfigVersion[] =
+            await StyleConfigVersionModel.find({
+                spaceid: spaceid as string,
+            });
+
+        handleSuccessResponse(res, { configs, versions });
     } catch (e) {
         handleErrorResponse(e, res);
     }
@@ -63,7 +87,6 @@ const saveDraft = async (req: Request, res: Response): Promise<void> => {
             },
         });
 
-        console.log(oldStyle, draftId);
         await moveOldConfigAndStoreVersion(oldStyle);
 
         handleSuccessResponse(res, {});
@@ -83,8 +106,22 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
             draft: false,
         });
 
+        const oldPreview: StyleConfig = await StyleConfigModel.findOne({
+            spaceid,
+            draft: true,
+        });
+
         if (oldStyle && !isPreview) {
             await moveOldConfigAndStoreVersion(oldStyle);
+        }
+
+        if (oldPreview && isPreview) {
+            await StyleConfigModel.findByIdAndUpdate(oldPreview._id, {
+                styles,
+            });
+
+            handleSuccessResponse(res, {});
+            return; // early return so we do not create multiple drafts
         }
 
         await StyleConfigModel.create({
@@ -198,4 +235,12 @@ const signIn = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-export { getConfig, addConfig, saveDraft, addNewUser, addUserToExistingSpace };
+export {
+    getAllConfigs,
+    getConfig,
+    addConfig,
+    saveDraft,
+    addNewUser,
+    addUserToExistingSpace,
+    signIn,
+};
