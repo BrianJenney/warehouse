@@ -24,6 +24,8 @@ describe('styles controller', () => {
                     maxWidth: null,
                 },
             ],
+            createdAt: new Date().toDateString(),
+            isActive: false,
         };
 
         it('rejects requests without a spaceid', async () => {
@@ -37,6 +39,8 @@ describe('styles controller', () => {
                         maxWidth: null,
                     },
                 ],
+                createdAt: new Date().toDateString(),
+                isActive: false,
             };
             const res = await request(app)
                 .post('/api/styles/addconfig')
@@ -70,6 +74,8 @@ describe('styles controller', () => {
                         maxWidth: null,
                     },
                 ],
+                createdAt: new Date().toDateString(),
+                isActive: false,
             });
 
             const res = await request(app)
@@ -125,6 +131,8 @@ describe('styles controller', () => {
                         maxWidth: null,
                     },
                 ],
+                createdAt: new Date().toDateString(),
+                isActive: false,
             };
             const oldNonDraft = await StyleConfigModel.create(baseConfigDoc);
             const currentDraft = await StyleConfigModel.create({
