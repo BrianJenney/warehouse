@@ -6,6 +6,7 @@ interface StyleConfigVersion {
     spaceid: string;
     styles: StyleObject[];
     version: number;
+    createdAt: string;
 }
 
 const schema = new Schema<StyleConfigVersion>({
@@ -16,6 +17,7 @@ const schema = new Schema<StyleConfigVersion>({
         },
     ],
     version: { type: Number },
+    createdAt: { type: Date, default: new Date() },
 });
 
 const StyleConfigVersionModel = model<StyleConfigVersion>(

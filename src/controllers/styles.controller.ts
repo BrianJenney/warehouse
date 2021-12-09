@@ -27,6 +27,7 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
         const styleConfig: StyleConfig = await StyleConfigModel.findOne({
             draft: isDraft,
             spaceid: spaceid as string,
+            isActive: true,
         });
 
         handleSuccessResponse(res, { styleConfig });
@@ -64,10 +65,12 @@ const moveOldConfigAndStoreVersion = async (
         _id: config._id,
         spaceid: config.spaceid,
         styles: config.styles,
+        isActive: config.isActive,
         version: config.version || 1,
+        createdAt: config.createdAt,
     });
 
-    await StyleConfigModel.deleteOne({ _id: config._id });
+    await StyleConfigModel.remove({ _id: config._id });
 };
 
 const saveDraft = async (req: Request, res: Response): Promise<void> => {
@@ -82,7 +85,7 @@ const saveDraft = async (req: Request, res: Response): Promise<void> => {
 
         await StyleConfigModel.findByIdAndUpdate(draftId, {
             $set: {
-                version: oldStyle.version + 1,
+                version: oldStyle ? (oldStyle.version || 1) + 1 : 1,
                 draft: false,
             },
         });
@@ -99,7 +102,7 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.body, ['spaceid', 'styles']);
 
-        const { isPreview, spaceid, styles } = req.body;
+        const { isPreview, spaceid, styles, isActive } = req.body;
 
         const oldStyle: StyleConfig = await StyleConfigModel.findOne({
             spaceid,
@@ -118,17 +121,39 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
         if (oldPreview && isPreview) {
             await StyleConfigModel.findByIdAndUpdate(oldPreview._id, {
                 styles,
+                isActive,
             });
 
             handleSuccessResponse(res, {});
             return; // early return so we do not create multiple drafts
         }
 
-        await StyleConfigModel.create({
+        const newConfig: StyleConfig = await StyleConfigModel.create({
             spaceid,
             styles,
             draft: isPreview,
             version: oldStyle ? (oldStyle.version || 1) + 1 : 1,
+            isActive,
+        });
+
+        handleSuccessResponse(res, { newConfig });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
+const toggleActiveState = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.body, ['configId', 'isActive']);
+        const { configId, isActive } = req.body;
+
+        await StyleConfigModel.findByIdAndUpdate(configId, {
+            $set: {
+                isActive,
+            },
         });
 
         handleSuccessResponse(res, {});
@@ -243,4 +268,5 @@ export {
     addNewUser,
     addUserToExistingSpace,
     signIn,
+    toggleActiveState,
 };
