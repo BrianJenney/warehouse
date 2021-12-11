@@ -20,14 +20,12 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
         const { isPreview, spaceid } = req.query;
 
         const isDraft: boolean =
-            (isPreview as string).toLocaleLowerCase() === 'false'
-                ? false
-                : true;
+            (isPreview as string).toLocaleLowerCase() === 'true' ? true : false;
 
         const styleConfig: StyleConfig = await StyleConfigModel.findOne({
             draft: isDraft,
             spaceid: spaceid as string,
-            isActive: true,
+            isActive: isDraft ? false : true,
         });
 
         handleSuccessResponse(res, { styleConfig });
