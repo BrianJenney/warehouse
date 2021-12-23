@@ -56,7 +56,7 @@ const getAllConfigs = async (req: Request, res: Response): Promise<void> => {
 };
 
 // move older version to the other schema
-const moveOldConfigAndStoreVersion = async (
+const _moveOldConfigAndStoreVersion = async (
     config: StyleConfig
 ): Promise<void> => {
     await StyleConfigVersionModel.create({
@@ -88,7 +88,7 @@ const saveDraft = async (req: Request, res: Response): Promise<void> => {
             },
         });
 
-        await moveOldConfigAndStoreVersion(oldStyle);
+        await _moveOldConfigAndStoreVersion(oldStyle);
 
         handleSuccessResponse(res, {});
     } catch (e) {
@@ -113,7 +113,7 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
         });
 
         if (oldStyle && !isPreview) {
-            await moveOldConfigAndStoreVersion(oldStyle);
+            await _moveOldConfigAndStoreVersion(oldStyle);
         }
 
         if (oldPreview && isPreview) {
@@ -173,7 +173,7 @@ const _addUserToSpace = async ({
         { new: true }
     );
 
-    await PspxUserModel.findByIdAndUpdate(spaceId, { new: true });
+    await PspxUserModel.findByIdAndUpdate(userId, { spaceId }, { new: true });
 };
 
 const addUserToExistingSpace = async (
@@ -208,22 +208,16 @@ const addUserToExistingSpace = async (
 
 const addNewUser = async (req: Request, res: Response): Promise<void> => {
     try {
-        throwUnlessValidReq(req.body, [
-            'email',
-            'password',
-            'firstName',
-            'lastName',
-        ]);
+        throwUnlessValidReq(req.body, ['email', 'name', 'userid']);
 
-        const { email, password, firstName, lastName } = req.body;
+        const { email, name, userid } = req.body;
 
         const apiKey: string = cryptoRandomString(6);
 
-        const newUser: PspxUser = await PspxUserModel.create({
+        const newUser = await PspxUserModel.create({
             email,
-            password,
-            firstName,
-            lastName,
+            userid,
+            name,
         });
 
         const newSpace: PspxSpace = await PspxSpaceModel.create({
@@ -239,20 +233,21 @@ const addNewUser = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
-const signIn = async (req: Request, res: Response): Promise<void> => {
+const getUserInfo = async (req: Request, res: Response): Promise<void> => {
     try {
-        throwUnlessValidReq(req.body, ['email', 'password']);
-        const { password, email } = req.body;
+        throwUnlessValidReq(req.query, ['userid']);
 
-        const currentUser: PspxUser = await PspxUserModel.findOne({
-            email,
-        }).select('+password');
+        const { userid } = req.query;
 
-        if (!currentUser.isValidPassword(password, currentUser.password)) {
-            throw new Error('Invalid Password');
-        }
+        const user: PspxUser = await PspxUserModel.findOne({
+            userid: userid as string,
+        });
 
-        res.send({ user: currentUser });
+        const userSpace: PspxSpace = await PspxSpaceModel.findById(
+            user.spaceId
+        );
+
+        handleSuccessResponse(res, { space: userSpace, user });
     } catch (e) {
         handleErrorResponse(e, res);
     }
@@ -265,6 +260,6 @@ export {
     saveDraft,
     addNewUser,
     addUserToExistingSpace,
-    signIn,
     toggleActiveState,
+    getUserInfo,
 };

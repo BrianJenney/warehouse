@@ -33,6 +33,7 @@
         "mongoose": "^5.13.2",
         "nodemailer": "^6.6.3",
         "serverless-http": "^2.7.0",
+        "stripe": "^8.195.0",
         "ts-jest": "^27.0.7"
     },
     "devDependencies": {

@@ -3,6 +3,8 @@ import {
     StyleConfigVersion,
     StyleConfigVersionModel,
 } from '../models/styleConfigVersion';
+import { PspxUserModel } from '../models/pspxUser';
+import { PspxSpaceModel } from '../models/pspxSpace';
 import request from 'supertest';
 import { app } from '../../server';
 
@@ -158,6 +160,21 @@ describe('styles controller', () => {
             expect(configDoc._id).toEqual(currentDraft._id);
             expect(configDoc.version).toEqual(oldNonDraft.version + 1);
             expect(versionDoc._id).toEqual(oldNonDraft._id);
+        });
+    });
+
+    describe('users actions', () => {
+        it('adds a user to a space', async () => {
+            await request(app).post('/api/styles/adduser').send({
+                name: 'Bob Bobert',
+                email: 'hotguy@hotmail.net',
+                userid: 'userid123',
+            });
+
+            const user = await PspxUserModel.findOne({ userid: 'userid123' });
+            const pspxSpace = await PspxSpaceModel.findById(user.spaceId);
+
+            expect(pspxSpace.users.includes(user._id)).toBeTruthy();
         });
     });
 });
