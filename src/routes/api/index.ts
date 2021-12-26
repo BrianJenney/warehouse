@@ -7,6 +7,7 @@ import passwordRoutes from './passwordChangeRoutes';
 import artistRoutes from './artistRoutes';
 import commentsRoutes from './commentsRoutes';
 import stylesRoutes from './styleConfigRoutes';
+import paymentsRoutes from './paymentRoutes';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/password', passwordRoutes);
 router.use('/artist', artistRoutes);
 router.use('/comment', commentsRoutes);
 router.use('/styles', stylesRoutes);
+router.use('/payments', paymentsRoutes);
 
 export default router;
