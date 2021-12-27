@@ -6,11 +6,15 @@ interface PspxSpace {
     spaceId: string;
     users: PspxUser[];
     accountType: string;
+    billingId?: string;
+    hasSubscription: boolean;
 }
 
 const schema = new Schema<PspxSpace>({
     spaceId: { type: String, required: true },
     users: [{ type: Types.ObjectId, ref: 'pspxuser' }],
+    billingId: { type: String },
+    hasSubscription: { type: Boolean, default: false },
 });
 
 const PspxSpaceModel = model<PspxSpace>('PspxSpace', schema);

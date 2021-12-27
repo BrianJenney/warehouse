@@ -28,7 +28,13 @@ app.use(
 );
 
 app.use(cors());
-app.use(express.json({ limit: '50mb' }));
+app.use((req, res, next) => {
+    if (req.originalUrl === '/api/payments/handlepayments') {
+        next();
+    } else {
+        express.json({ limit: '50mb' })(req, res, next);
+    }
+});
 app.use(allRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
