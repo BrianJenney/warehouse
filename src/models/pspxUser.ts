@@ -9,9 +9,9 @@ interface PspxUser {
 }
 
 const schema = new Schema<PspxUser>({
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    userid: { type: String, required: true },
+    name: { type: String },
+    email: { type: String, unique: true, required: true },
+    userid: { type: String },
     spaceId: { type: Types.ObjectId, ref: 'pspxspace' },
 });
 

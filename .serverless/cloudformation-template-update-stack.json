@@ -74,7 +74,7 @@
     "AppLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/warehouse-production-app"
+        "LogGroupName": "/aws/lambda/warehouse-dev-app"
       }
     },
     "IamRoleLambdaExecution": {
@@ -103,7 +103,7 @@
                 "-",
                 [
                   "warehouse",
-                  "production",
+                  "dev",
                   "lambda"
                 ]
               ]
@@ -119,7 +119,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/warehouse-production*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/warehouse-dev*:*"
                     }
                   ]
                 },
@@ -130,7 +130,7 @@
                   ],
                   "Resource": [
                     {
-                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/warehouse-production*:*:*"
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/warehouse-dev*:*:*"
                     }
                   ]
                 }
@@ -144,7 +144,7 @@
             "-",
             [
               "warehouse",
-              "production",
+              "dev",
               {
                 "Ref": "AWS::Region"
               },
@@ -207,11 +207,11 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/production/1637775949912-2021-11-24T17:45:49.912Z/warehouse.zip"
+          "S3Key": "serverless/warehouse/dev/1640571300602-2021-12-27T02:15:00.602Z/warehouse.zip"
         },
         "Handler": "s_app.handler",
         "Runtime": "nodejs12.x",
-        "FunctionName": "warehouse-production-app",
+        "FunctionName": "warehouse-dev-app",
         "MemorySize": 128,
         "Timeout": 6,
         "Role": {
@@ -225,20 +225,20 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersion10bQfIlbSFGPCDqovYg2njraqSTN5j2wWPuo8qDntvE": {
+    "AppLambdaVersionkim7eivaQIoCP3Xd0yJFyhS4NcDleWMkEhw2wvbJnc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "ZUYwKjUkYfnK6NSSF+XQ2L9HFV6oeYgzL7QUe3gPw9E="
+        "CodeSha256": "Hjkk/dGmlyZOBiHk2czpBf2P5ejMh/cnv03l9fU3PYo="
       }
     },
     "ApiGatewayRestApi": {
       "Type": "AWS::ApiGateway::RestApi",
       "Properties": {
-        "Name": "production-warehouse",
+        "Name": "dev-warehouse",
         "EndpointConfiguration": {
           "Types": [
             "EDGE"
@@ -450,13 +450,13 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1637775928443": {
+    "ApiGatewayDeployment1640571282480": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         },
-        "StageName": "production"
+        "StageName": "dev"
       },
       "DependsOn": [
         "ApiGatewayMethodOptions",
@@ -505,7 +505,7 @@
     "ApiGatewayLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/api-gateway/warehouse-production"
+        "LogGroupName": "/aws/api-gateway/warehouse-dev"
       }
     },
     "CustomApiGatewayAccountCloudWatchRole": {
@@ -545,7 +545,7 @@
               "Fn::Join": [
                 "-",
                 [
-                  "production",
+                  "dev",
                   "warehouse",
                   "custom-resources-lambda"
                 ]
@@ -611,9 +611,9 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/production/1637775949912-2021-11-24T17:45:49.912Z/custom-resources.zip"
+          "S3Key": "serverless/warehouse/dev/1640571300602-2021-12-27T02:15:00.602Z/custom-resources.zip"
         },
-        "FunctionName": "warehouse-production-custom-resource-apigw-cw-role",
+        "FunctionName": "warehouse-dev-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
         "MemorySize": 1024,
         "Runtime": "nodejs12.x",
@@ -632,7 +632,7 @@
     "CWLSubFilterAppLogGroupUsEast1": {
       "Type": "AWS::Logs::SubscriptionFilter",
       "Properties": {
-        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:6740d3c3-527e-4940-9e58-e5cabd43ee67#CqD3J0s1F7nSXd0cg9#warehouse#production",
+        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:6740d3c3-527e-4940-9e58-e5cabd43ee67#CqD3J0s1F7nSXd0cg9#warehouse#dev",
         "FilterPattern": "?\"REPORT RequestId: \" ?\"SERVERLESS_ENTERPRISE\"",
         "LogGroupName": {
           "Ref": "AppLogGroup"
@@ -642,7 +642,7 @@
     "CWLSubFilterApiGatewayLogGroupUsEast1": {
       "Type": "AWS::Logs::SubscriptionFilter",
       "Properties": {
-        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:6740d3c3-527e-4940-9e58-e5cabd43ee67#CqD3J0s1F7nSXd0cg9#warehouse#production",
+        "DestinationArn": "arn:aws:logs:us-east-1:802587217904:destination:6740d3c3-527e-4940-9e58-e5cabd43ee67#CqD3J0s1F7nSXd0cg9#warehouse#dev",
         "FilterPattern": "\"SLS_ACCESS_LOG\"",
         "LogGroupName": {
           "Ref": "ApiGatewayLogGroup"
@@ -656,7 +656,7 @@
         "Ref": "ServerlessDeploymentBucket"
       },
       "Export": {
-        "Name": "sls-warehouse-production-ServerlessDeploymentBucketName"
+        "Name": "sls-warehouse-dev-ServerlessDeploymentBucketName"
       }
     },
     "EnterpriseLogAccessIamRole": {
@@ -667,16 +667,16 @@
         ]
       },
       "Export": {
-        "Name": "sls-warehouse-production-EnterpriseLogAccessIamRole"
+        "Name": "sls-warehouse-dev-EnterpriseLogAccessIamRole"
       }
     },
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersion10bQfIlbSFGPCDqovYg2njraqSTN5j2wWPuo8qDntvE"
+        "Ref": "AppLambdaVersionkim7eivaQIoCP3Xd0yJFyhS4NcDleWMkEhw2wvbJnc"
       },
       "Export": {
-        "Name": "sls-warehouse-production-AppLambdaFunctionQualifiedArn"
+        "Name": "sls-warehouse-dev-AppLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {
@@ -697,12 +697,12 @@
             {
               "Ref": "AWS::URLSuffix"
             },
-            "/production"
+            "/dev"
           ]
         ]
       },
       "Export": {
-        "Name": "sls-warehouse-production-ServiceEndpoint"
+        "Name": "sls-warehouse-dev-ServiceEndpoint"
       }
     }
   }

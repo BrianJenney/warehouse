@@ -164,6 +164,10 @@ describe('styles controller', () => {
     });
 
     describe('users actions', () => {
+        beforeEach(async () => {
+            await PspxUserModel.deleteMany({});
+            await PspxSpaceModel.deleteMany({});
+        });
         it('adds a user to a space', async () => {
             await request(app).post('/api/styles/adduser').send({
                 name: 'Bob Bobert',
@@ -175,6 +179,26 @@ describe('styles controller', () => {
             const pspxSpace = await PspxSpaceModel.findById(user.spaceId);
 
             expect(pspxSpace.users.includes(user._id)).toBeTruthy();
+        });
+
+        it('updates a user with a user id if they have been already added to a space', async () => {
+            await PspxUserModel.create({
+                email: 'hotguy@hotmail.net',
+            });
+
+            await request(app).post('/api/styles/adduser').send({
+                name: 'Bob Bobert',
+                email: 'hotguy@hotmail.net',
+                userid: 'userid123',
+            });
+
+            const user = await PspxUserModel.findOne({
+                email: 'hotguy@hotmail.net',
+            });
+            const pspxSpaces = await PspxSpaceModel.find({});
+
+            expect(user.userid).toEqual('userid123');
+            expect(pspxSpaces).toHaveLength(0);
         });
     });
 });

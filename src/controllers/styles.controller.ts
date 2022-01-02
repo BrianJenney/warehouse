@@ -13,6 +13,59 @@ import cryptoRandomString from 'crypto-random-string';
 import { PspxUserModel, PspxUser } from '../models/pspxUser';
 import { PspxSpaceModel, PspxSpace } from '../models/pspxSpace';
 
+const _addUserToSpace = async ({
+    userId,
+    spaceId,
+}: {
+    userId: string;
+    spaceId: string;
+}): Promise<void> => {
+    await PspxSpaceModel.findByIdAndUpdate(
+        spaceId,
+        { $addToSet: { users: userId } },
+        { new: true }
+    );
+
+    await PspxUserModel.findByIdAndUpdate(userId, { spaceId }, { new: true });
+};
+
+const _removeUserFromSpace = async ({
+    userId,
+    spaceId,
+}: {
+    userId: string;
+    spaceId: string;
+}): Promise<void> => {
+    await PspxSpaceModel.findByIdAndUpdate(
+        spaceId,
+        { $pull: { users: userId } },
+        { new: true }
+    );
+
+    await PspxUserModel.findByIdAndUpdate(
+        userId,
+        { spaceId: null },
+        { new: true }
+    );
+};
+
+// move older version to the other schema
+
+const _moveOldConfigAndStoreVersion = async (
+    config: StyleConfig
+): Promise<void> => {
+    await StyleConfigVersionModel.create({
+        _id: config._id,
+        spaceid: config.spaceid,
+        styles: config.styles,
+        isActive: config.isActive,
+        version: config.version || 1,
+        createdAt: config.createdAt,
+    });
+
+    await StyleConfigModel.remove({ _id: config._id });
+};
+
 const getConfig = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.query, ['spaceid']);
@@ -21,6 +74,15 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
 
         const isDraft: boolean =
             (isPreview as string).toLocaleLowerCase() === 'true' ? true : false;
+
+        // return early if no subscription
+        const pspxSpace: PspxSpace = await PspxSpaceModel.findOne({
+            spaceId: spaceid as string,
+        });
+
+        if (!pspxSpace || !pspxSpace.hasSubscription) {
+            handleSuccessResponse(res, { styleConfig: null });
+        }
 
         const styleConfig: StyleConfig = await StyleConfigModel.findOne({
             draft: isDraft,
@@ -53,22 +115,6 @@ const getAllConfigs = async (req: Request, res: Response): Promise<void> => {
     } catch (e) {
         handleErrorResponse(e, res);
     }
-};
-
-// move older version to the other schema
-const _moveOldConfigAndStoreVersion = async (
-    config: StyleConfig
-): Promise<void> => {
-    await StyleConfigVersionModel.create({
-        _id: config._id,
-        spaceid: config.spaceid,
-        styles: config.styles,
-        isActive: config.isActive,
-        version: config.version || 1,
-        createdAt: config.createdAt,
-    });
-
-    await StyleConfigModel.remove({ _id: config._id });
 };
 
 const saveDraft = async (req: Request, res: Response): Promise<void> => {
@@ -160,47 +206,22 @@ const toggleActiveState = async (
     }
 };
 
-const _addUserToSpace = async ({
-    userId,
-    spaceId,
-}: {
-    userId: string;
-    spaceId: string;
-}): Promise<void> => {
-    await PspxSpaceModel.findByIdAndUpdate(
-        spaceId,
-        { $addToSet: { users: userId } },
-        { new: true }
-    );
-
-    await PspxUserModel.findByIdAndUpdate(userId, { spaceId }, { new: true });
-};
-
 const addUserToExistingSpace = async (
     req: Request,
     res: Response
 ): Promise<void> => {
     try {
-        throwUnlessValidReq(req.body, [
-            'email',
-            'password',
-            'firstName',
-            'lastName',
-            'spaceId',
-        ]);
+        throwUnlessValidReq(req.body, ['email', 'spaceId']);
 
-        const { email, password, firstName, lastName, spaceId } = req.body;
+        const { email, spaceId } = req.body;
 
         const newUser: PspxUser = await PspxUserModel.create({
             email,
-            password,
-            firstName,
-            lastName,
         });
 
         await _addUserToSpace({ userId: newUser._id, spaceId });
 
-        handleSuccessResponse(res, {});
+        handleSuccessResponse(res, { newUser });
     } catch (e) {
         handleErrorResponse(e, res);
     }
@@ -211,6 +232,19 @@ const addNewUser = async (req: Request, res: Response): Promise<void> => {
         throwUnlessValidReq(req.body, ['email', 'name', 'userid']);
 
         const { email, name, userid } = req.body;
+
+        // check if user already exists and just assign userid from auth0
+        const currentUser: PspxUser = await PspxUserModel.findOne({ email });
+
+        if (currentUser) {
+            await PspxUserModel.findByIdAndUpdate(
+                currentUser._id,
+                { userid, name },
+                { new: true }
+            );
+            handleSuccessResponse(res, {});
+            return;
+        }
 
         const apiKey: string = cryptoRandomString(6);
 
@@ -233,6 +267,20 @@ const addNewUser = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const removeUser = async (req: Request, res: Response): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.body, ['spaceId', 'userid']);
+
+        const { spaceId, userid } = req.body;
+
+        await _removeUserFromSpace({ userId: userid, spaceId });
+
+        handleSuccessResponse(res, {});
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
 const getUserInfo = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.query, ['userid']);
@@ -247,7 +295,15 @@ const getUserInfo = async (req: Request, res: Response): Promise<void> => {
             user.spaceId
         );
 
-        handleSuccessResponse(res, { space: userSpace, user });
+        const allUsers: PspxUser[] = await Promise.all(
+            userSpace.users.map((id) => PspxUserModel.findById(id))
+        );
+
+        handleSuccessResponse(res, {
+            space: userSpace,
+            user,
+            spaceUsers: allUsers,
+        });
     } catch (e) {
         handleErrorResponse(e, res);
     }
@@ -262,4 +318,5 @@ export {
     addUserToExistingSpace,
     toggleActiveState,
     getUserInfo,
+    removeUser,
 };

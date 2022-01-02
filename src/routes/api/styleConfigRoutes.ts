@@ -7,6 +7,7 @@ import {
     toggleActiveState,
     addNewUser,
     addUserToExistingSpace,
+    removeUser,
     getUserInfo,
 } from '../../controllers/styles.controller';
 
@@ -18,6 +19,7 @@ router.route('/getconfig').get(getConfig);
 router.route('/getallconfigs').get(getAllConfigs);
 router.route('/adduser').post(addNewUser);
 router.route('/addusertospace').post(addUserToExistingSpace);
+router.route('/removeuserfromspace').post(removeUser);
 router.route('/updateActiveState').post(toggleActiveState);
 router.route('/getuser').get(getUserInfo);
 
