@@ -302,7 +302,7 @@ const getUserInfo = async (req: Request, res: Response): Promise<void> => {
         handleSuccessResponse(res, {
             space: userSpace,
             user,
-            spaceUsers: allUsers,
+            spaceUsers: allUsers.filter(Boolean),
         });
     } catch (e) {
         handleErrorResponse(e, res);

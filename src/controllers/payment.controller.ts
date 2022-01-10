@@ -3,13 +3,11 @@ import Stripe from 'stripe';
 import { Request, Response } from 'express';
 import { handleErrorResponse, handleSuccessResponse } from '../apiHelpers';
 import { PspxSpaceModel } from '../models/pspxSpace';
-import { Types } from 'mongoose';
 // Replace this endpoint secret with your endpoint's unique secret
 // If you are testing with the CLI, find the secret by running 'stripe listen'
 // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
 // at https://dashboard.stripe.com/webhooks
 import { config } from 'dotenv';
-import { hasSubscribers } from 'diagnostic_channel';
 config();
 
 const endpointSecret = process.env.STRIPE_SECRET;
@@ -22,6 +20,7 @@ const _addSubscriptionToSpace = async (
     billingId: string,
     hasSubscription?: boolean | true
 ): Promise<void> => {
+    console.log({ hasSubscription });
     await PspxSpaceModel.findOneAndUpdate(
         { spaceId },
         {
@@ -35,6 +34,10 @@ const createCheckOutSession = async (
     req: Request,
     res: Response
 ): Promise<void> => {
+    const isProd: boolean = process.env.NODE_ENV === 'production';
+    const callBackUrl: string = isProd
+        ? 'https://pspxapp.com/account'
+        : 'http://localhost:3000/account';
     try {
         const { priceId, userId, spaceId } = req.body;
 
@@ -52,8 +55,8 @@ const createCheckOutSession = async (
                 },
             },
             mode: 'subscription',
-            success_url: 'http://localhost:3000/account',
-            cancel_url: 'http://localhost:3000/account',
+            success_url: callBackUrl,
+            cancel_url: callBackUrl,
         });
 
         handleSuccessResponse(res, { sessionUrl: session.url });
@@ -110,7 +113,8 @@ const handlePayments = async (req: Request, res: Response): Promise<void> => {
             stripeObj = eventObject.data.object;
             await _addSubscriptionToSpace(
                 stripeObj.metadata.spaceId,
-                stripeObj.id
+                stripeObj.id,
+                true
             );
             // Then define and call a function to handle the event customer.subscription.created
             break;
@@ -123,7 +127,8 @@ const handlePayments = async (req: Request, res: Response): Promise<void> => {
             // Then define and call a function to handle the event customer.subscription.updated
             await _addSubscriptionToSpace(
                 stripeObj.metadata.spaceId,
-                stripeObj.id
+                stripeObj.id,
+                true
             );
             break;
         default:
