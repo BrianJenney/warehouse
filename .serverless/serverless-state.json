@@ -221,7 +221,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/warehouse/dev/1640571300602-2021-12-27T02:15:00.602Z/warehouse.zip"
+                "S3Key": "serverless/warehouse/dev/1641828605707-2022-01-10T15:30:05.707Z/warehouse.zip"
               },
               "Handler": "s_app.handler",
               "Runtime": "nodejs12.x",
@@ -239,14 +239,14 @@
               "AppLogGroup"
             ]
           },
-          "AppLambdaVersionkim7eivaQIoCP3Xd0yJFyhS4NcDleWMkEhw2wvbJnc": {
+          "AppLambdaVersionJC66hXtQaoxvLb1rcNhXiy5nS19tIRQD2abY5r7GeU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "Hjkk/dGmlyZOBiHk2czpBf2P5ejMh/cnv03l9fU3PYo="
+              "CodeSha256": "aWmDGcMnnvku0Q6GxSJFASopZ3R1sp9zE7JzsgPD27w="
             }
           },
           "ApiGatewayRestApi": {
@@ -464,7 +464,7 @@
               "AppLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1640571282480": {
+          "ApiGatewayDeployment1641828579485": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -625,7 +625,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/warehouse/dev/1640571300602-2021-12-27T02:15:00.602Z/custom-resources.zip"
+                "S3Key": "serverless/warehouse/dev/1641828605707-2022-01-10T15:30:05.707Z/custom-resources.zip"
               },
               "FunctionName": "warehouse-dev-custom-resource-apigw-cw-role",
               "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -687,7 +687,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionkim7eivaQIoCP3Xd0yJFyhS4NcDleWMkEhw2wvbJnc"
+              "Ref": "AppLambdaVersionJC66hXtQaoxvLb1rcNhXiy5nS19tIRQD2abY5r7GeU"
             },
             "Export": {
               "Name": "sls-warehouse-dev-AppLambdaFunctionQualifiedArn"
@@ -874,7 +874,7 @@
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "AppLambdaVersionkim7eivaQIoCP3Xd0yJFyhS4NcDleWMkEhw2wvbJnc"
+        "versionLogicalId": "AppLambdaVersionJC66hXtQaoxvLb1rcNhXiy5nS19tIRQD2abY5r7GeU"
       }
     },
     "configValidationMode": "warn",
@@ -902,7 +902,7 @@
     "artifact": "/Users/brianjenney1/Desktop/apps/warehouse/.serverless/warehouse.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/warehouse/dev/1640571300602-2021-12-27T02:15:00.602Z",
+    "artifactDirectoryName": "serverless/warehouse/dev/1641828605707-2022-01-10T15:30:05.707Z",
     "artifact": "warehouse.zip"
   }
 }

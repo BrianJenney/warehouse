@@ -13,6 +13,11 @@ import cryptoRandomString from 'crypto-random-string';
 import { PspxUserModel, PspxUser } from '../models/pspxUser';
 import { PspxSpaceModel, PspxSpace } from '../models/pspxSpace';
 
+const _hasSubsciption = async (spaceId: string): Promise<boolean> => {
+    const space: PspxSpace = await PspxSpaceModel.findById(spaceId);
+    return space.hasSubscription;
+};
+
 const _addUserToSpace = async ({
     userId,
     spaceId,
@@ -213,7 +218,16 @@ const addUserToExistingSpace = async (
     try {
         throwUnlessValidReq(req.body, ['email', 'spaceId']);
 
-        const { email, spaceId } = req.body;
+        const { email, spaceId, space } = req.body;
+
+        console.log({ space });
+
+        if (!space.hasSubscription) {
+            return handleErrorResponse(
+                { message: 'You need a subscription to add users' },
+                res
+            );
+        }
 
         const newUser: PspxUser = await PspxUserModel.create({
             email,

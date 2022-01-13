@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { PspxSpaceModel, PspxSpace } from './models/pspxSpace';
 import jwt from 'jsonwebtoken';
 import { TokenInterface } from './interfaces/token';
 
@@ -38,6 +39,21 @@ const verifyAuthentication = async (
     res.sendStatus(403);
 };
 
+const addSubscriptionInfo = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+): Promise<void> => {
+    if (req.body && req.body.spaceId) {
+        const space: PspxSpace = await PspxSpaceModel.findById(
+            req.body.spaceId
+        );
+
+        req.body = Object.assign({}, req.body, { space });
+    }
+    next();
+};
+
 const handleErrorResponse = (
     error: Record<string, unknown>,
     res: Response
@@ -66,4 +82,5 @@ export {
     handleErrorResponse,
     handleSuccessResponse,
     verifyAuthentication,
+    addSubscriptionInfo,
 };

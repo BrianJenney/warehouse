@@ -200,5 +200,43 @@ describe('styles controller', () => {
             expect(user.userid).toEqual('userid123');
             expect(pspxSpaces).toHaveLength(0);
         });
+
+        it('adds a user to an existing space if that space has a subscription', async () => {
+            const paidSpace = await PspxSpaceModel.create({
+                spaceId: '123abc',
+                billingId: 'billingId',
+                hasSubscription: true,
+            });
+
+            const unPaidSpace = await PspxSpaceModel.create({
+                spaceId: '456def',
+                billingId: null,
+                hasSubscription: false,
+            });
+
+            const paidSpaceRes = await request(app)
+                .post('/api/styles/addusertospace')
+                .send({
+                    name: 'Bob Pays',
+                    email: 'richguy@hotmail.net',
+                    spaceId: paidSpace._id,
+                });
+
+            const unpaidSpaceRes = await request(app)
+                .post('/api/styles/addusertospace')
+                .send({
+                    name: 'Bob Nopays',
+                    email: 'poorguy@hotmail.net',
+                    spaceId: unPaidSpace._id,
+                });
+
+            const pspxUser = await PspxUserModel.findOne({
+                email: 'richguy@hotmail.net',
+            });
+
+            expect(pspxUser).toBeTruthy();
+            expect(unpaidSpaceRes.status).toEqual(500);
+            expect(paidSpaceRes.status).toEqual(200);
+        });
     });
 });
