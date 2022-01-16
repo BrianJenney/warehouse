@@ -169,7 +169,7 @@ describe('styles controller', () => {
             await PspxSpaceModel.deleteMany({});
         });
         it('adds a user to a space', async () => {
-            await request(app).post('/api/styles/adduser').send({
+            const res = await request(app).post('/api/styles/adduser').send({
                 name: 'Bob Bobert',
                 email: 'hotguy@hotmail.net',
                 userid: 'userid123',
@@ -179,6 +179,7 @@ describe('styles controller', () => {
             const pspxSpace = await PspxSpaceModel.findById(user.spaceId);
 
             expect(pspxSpace.users.includes(user._id)).toBeTruthy();
+            expect(res.body.newUser.email).toEqual('hotguy@hotmail.net');
         });
 
         it('updates a user with a user id if they have been already added to a space', async () => {

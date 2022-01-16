@@ -13,11 +13,6 @@ import cryptoRandomString from 'crypto-random-string';
 import { PspxUserModel, PspxUser } from '../models/pspxUser';
 import { PspxSpaceModel, PspxSpace } from '../models/pspxSpace';
 
-const _hasSubsciption = async (spaceId: string): Promise<boolean> => {
-    const space: PspxSpace = await PspxSpaceModel.findById(spaceId);
-    return space.hasSubscription;
-};
-
 const _addUserToSpace = async ({
     userId,
     spaceId,
@@ -151,7 +146,16 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.body, ['spaceid', 'styles']);
 
-        const { isPreview, spaceid, styles, isActive } = req.body;
+        const { isPreview, spaceid, styles, isActive, space } = req.body;
+
+        if (!space.hasSubscription && styles.length > process.env.MAX_STYLES) {
+            return handleErrorResponse(
+                {
+                    message: `Account type does not support more than ${process.env.MAX_STYLES} styles`,
+                },
+                res
+            );
+        }
 
         const oldStyle: StyleConfig = await StyleConfigModel.findOne({
             spaceid,
@@ -275,7 +279,7 @@ const addNewUser = async (req: Request, res: Response): Promise<void> => {
 
         await _addUserToSpace({ userId: newUser._id, spaceId: newSpace._id });
 
-        handleSuccessResponse(res, {});
+        handleSuccessResponse(res, { newUser });
     } catch (e) {
         handleErrorResponse(e, res);
     }
