@@ -82,7 +82,7 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
             spaceId: spaceid as string,
         });
 
-        if (!pspxSpace || !pspxSpace.hasSubscription) {
+        if (!pspxSpace) {
             handleSuccessResponse(res, { styleConfig: null });
         }
 
