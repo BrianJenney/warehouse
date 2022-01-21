@@ -224,8 +224,6 @@ const addUserToExistingSpace = async (
 
         const { email, spaceId, space } = req.body;
 
-        console.log({ space });
-
         if (!space.hasSubscription) {
             return handleErrorResponse(
                 { message: 'You need a subscription to add users' },

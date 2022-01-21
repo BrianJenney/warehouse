@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { PspxSpaceModel, PspxSpace } from './models/pspxSpace';
 import jwt from 'jsonwebtoken';
+import { Types } from 'mongoose';
 import { TokenInterface } from './interfaces/token';
 
 const throwUnlessValidReq = (
@@ -44,12 +45,21 @@ const addSubscriptionInfo = async (
     res: Response,
     next: NextFunction
 ): Promise<void> => {
-    if (req.body && req.body.spaceId) {
-        const space: PspxSpace = await PspxSpaceModel.findById(
-            req.body.spaceId
-        );
+    // we accept both spaceid and spaceId 🙄 and the id can be a string or a true id so we must check all scenarios
+    if (req.body && (req.body.spaceId || req.body.spaceid)) {
+        const validId: string = req.body.spaceId || req.body.spaceid;
 
-        req.body = Object.assign({}, req.body, { space });
+        const isObjectId: boolean = Types.ObjectId.isValid(validId);
+
+        const space: PspxSpace = isObjectId
+            ? await PspxSpaceModel.findById(validId)
+            : await PspxSpaceModel.findOne({
+                  spaceId: validId,
+              });
+
+        req.body = Object.assign({}, req.body, {
+            space,
+        });
     }
     next();
 };

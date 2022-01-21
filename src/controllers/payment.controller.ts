@@ -20,7 +20,6 @@ const _addSubscriptionToSpace = async (
     billingId: string,
     hasSubscription?: boolean | true
 ): Promise<void> => {
-    console.log({ hasSubscription });
     await PspxSpaceModel.findOneAndUpdate(
         { spaceId },
         {

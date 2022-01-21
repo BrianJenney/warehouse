@@ -168,6 +168,7 @@ describe('styles controller', () => {
             await PspxUserModel.deleteMany({});
             await PspxSpaceModel.deleteMany({});
         });
+
         it('adds a user to a space', async () => {
             const res = await request(app).post('/api/styles/adduser').send({
                 name: 'Bob Bobert',
