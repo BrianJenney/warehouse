@@ -70,10 +70,12 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.query, ['spaceid']);
 
-        const { isPreview, spaceid } = req.query;
+        const { isPreview = '', spaceid } = req.query;
 
         const isDraft: boolean =
-            (isPreview as string).toLocaleLowerCase() === 'true' ? true : false;
+            ((isPreview as string) || '').toLocaleLowerCase() === 'true'
+                ? true
+                : false;
 
         // return early if no subscription
         const pspxSpace: PspxSpace = await PspxSpaceModel.findOne({
