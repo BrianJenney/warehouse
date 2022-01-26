@@ -2,7 +2,8 @@
 import Stripe from 'stripe';
 import { Request, Response } from 'express';
 import { handleErrorResponse, handleSuccessResponse } from '../apiHelpers';
-import { PspxSpaceModel } from '../models/pspxSpace';
+import { PspxUserModel } from '../models/pspxUser';
+import { PspxSpace, PspxSpaceModel } from '../models/pspxSpace';
 // Replace this endpoint secret with your endpoint's unique secret
 // If you are testing with the CLI, find the secret by running 'stripe listen'
 // If you are using an endpoint defined with the API or dashboard, look in your webhook settings
@@ -15,18 +16,26 @@ const stripePayment = new Stripe(process.env.STRIPE_API_KEY, {
     apiVersion: '2020-08-27',
 });
 
+const _makeUserAdmin = async (userId: string): Promise<void> => {
+    await PspxUserModel.findByIdAndUpdate(userId, {
+        isAdmin: true,
+    });
+};
+
 const _addSubscriptionToSpace = async (
     spaceId: string,
     billingId: string,
     hasSubscription?: boolean | true
 ): Promise<void> => {
-    await PspxSpaceModel.findOneAndUpdate(
-        { spaceId },
-        {
-            billingId,
-            hasSubscription,
-        }
-    );
+    const pspxSpace: PspxSpace = await PspxSpaceModel.findOne({
+        spaceId,
+    });
+
+    await _makeUserAdmin(pspxSpace.users[0]);
+    await PspxSpaceModel.findByIdAndUpdate(pspxSpace._id, {
+        billingId,
+        hasSubscription,
+    });
 };
 
 const createCheckOutSession = async (

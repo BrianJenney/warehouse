@@ -4,7 +4,7 @@ import { PspxUser } from './pspxUser';
 interface PspxSpace {
     _id: string;
     spaceId: string;
-    users: PspxUser[];
+    users: string[];
     accountType: string;
     billingId?: string;
     hasSubscription: boolean;

@@ -6,6 +6,7 @@ interface PspxUser {
     userid: string;
     email: string;
     spaceId: string;
+    isAdmin?: boolean | true;
 }
 
 const schema = new Schema<PspxUser>({
@@ -13,6 +14,7 @@ const schema = new Schema<PspxUser>({
     email: { type: String, unique: true, required: true },
     userid: { type: String },
     spaceId: { type: Types.ObjectId, ref: 'pspxspace' },
+    isAdmin: { type: Boolean, default: false },
 });
 
 const PspxUserModel = model<PspxUser>('PspxUser', schema);
