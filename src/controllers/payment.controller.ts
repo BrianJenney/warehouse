@@ -42,7 +42,7 @@ const createCheckOutSession = async (
     req: Request,
     res: Response
 ): Promise<void> => {
-    const isProd: boolean = process.env.NODE_ENV === 'production';
+    const isProd: boolean = process.env.ENV_VAR === 'production';
     const callBackUrl: string = isProd
         ? 'https://pspxapp.com/account'
         : 'http://localhost:3000/account';
