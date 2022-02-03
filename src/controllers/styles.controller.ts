@@ -150,7 +150,7 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
 
         const { isPreview, spaceid, styles, isActive, space } = req.body;
 
-        if (!space.hasSubscription && styles.length > process.env.MAX_STYLES) {
+        if (!space.hasSubscription && styles.length > +process.env.MAX_STYLES) {
             return handleErrorResponse(
                 {
                     message: `Account type does not support more than ${process.env.MAX_STYLES} styles`,

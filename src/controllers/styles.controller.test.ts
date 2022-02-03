@@ -9,29 +9,36 @@ import request from 'supertest';
 import { app } from '../../server';
 
 describe('styles controller', () => {
+    const spaceId = '123ABC';
+    const newConfig: StyleConfig = {
+        spaceid: spaceId,
+        styles: [
+            {
+                element: 'p',
+                styles: ['color: red'],
+                minWidth: 100,
+                maxWidth: null,
+            },
+        ],
+        createdAt: new Date().toDateString(),
+        isActive: false,
+    };
+    beforeEach(async () => {
+        await PspxSpaceModel.create({
+            spaceId,
+            billingId: null,
+            hasSubscription: false,
+            users: [],
+        });
+    });
     describe('addConfig', () => {
         beforeEach(async () => {
             await StyleConfigModel.deleteMany({});
             await StyleConfigVersionModel.deleteMany({});
         });
 
-        const spaceId = '123ABC';
-        const newConfig: StyleConfig = {
-            spaceid: spaceId,
-            styles: [
-                {
-                    element: 'p',
-                    styles: ['color: red'],
-                    minWidth: 100,
-                    maxWidth: null,
-                },
-            ],
-            createdAt: new Date().toDateString(),
-            isActive: false,
-        };
-
         it('rejects requests without a spaceid', async () => {
-            const newConfig: StyleConfig = {
+            const configNoId: StyleConfig = {
                 spaceid: undefined,
                 styles: [
                     {
@@ -46,7 +53,7 @@ describe('styles controller', () => {
             };
             const res = await request(app)
                 .post('/api/styles/addconfig')
-                .send(newConfig);
+                .send(configNoId);
 
             expect(res.status).toEqual(500);
         });

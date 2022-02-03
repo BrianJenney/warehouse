@@ -1,5 +1,4 @@
-import { Schema, model, Types, ValidateFn } from 'mongoose';
-import { PspxUser } from './pspxUser';
+import { Schema, model, Types } from 'mongoose';
 
 interface PspxSpace {
     _id: string;
@@ -10,20 +9,12 @@ interface PspxSpace {
     hasSubscription: boolean;
 }
 
-function arrayLimit(val: [any]) {
-    return val.length <= 10;
-}
-
 const schema = new Schema<PspxSpace>({
     spaceId: { type: String, required: true },
     users: [
         {
             type: Types.ObjectId,
             ref: 'pspxuser',
-            validate: [
-                arrayLimit,
-                `{PATH} exceeds the limit of ${process.env.MAX_USERS}`,
-            ],
         },
     ],
     billingId: { type: String },

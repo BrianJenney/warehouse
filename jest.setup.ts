@@ -23,6 +23,9 @@ beforeAll(async () => {
      */
     process.env.MONGO_URI = mongo.getUri();
     process.env.MONGO_DB = 'jest';
+    process.env.MAX_USERS = '5';
+    process.env.MAX_CONFIGS = '5';
+    process.env.MAX_STYLES = '1';
 
     /**
      * 1.3
@@ -41,5 +44,6 @@ afterAll(async () => {
      * Close connection to our MongoDB
      * Stop our in-memory MongoDB
      */
+
     await mongoose.connection.close();
 });
