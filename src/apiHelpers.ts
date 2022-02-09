@@ -1,8 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { PspxSpaceModel, PspxSpace } from './models/pspxSpace';
-import jwt from 'jsonwebtoken';
 import { Types } from 'mongoose';
-import { TokenInterface } from './interfaces/token';
 
 const throwUnlessValidReq = (
     reqBody: Record<string, unknown>,
@@ -15,29 +13,6 @@ const throwUnlessValidReq = (
     }
 
     return true;
-};
-
-const verifyAuthentication = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-): Promise<void> => {
-    const authToken = req.headers['authorization'];
-    if (typeof authToken !== 'undefined') {
-        const bearer = authToken.split(' ');
-        const bearerToken = bearer[1];
-
-        try {
-            jwt.verify(
-                bearerToken,
-                process.env.ACCESS_TOKEN_SECRET
-            ) as TokenInterface;
-            next();
-        } catch (e) {
-            res.sendStatus(403);
-        }
-    }
-    res.sendStatus(403);
 };
 
 const addSubscriptionInfo = async (
@@ -91,6 +66,5 @@ export {
     throwUnlessValidReq,
     handleErrorResponse,
     handleSuccessResponse,
-    verifyAuthentication,
     addSubscriptionInfo,
 };

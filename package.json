@@ -8,6 +8,7 @@
         "start": "tsc & node .",
         "dev": "tsc -w & nodemon .",
         "test": "jest --silent=false --runInBand --detectOpenHandles --watchAll=false",
+        "coverage": "jest --collectCoverage",
         "deploy-stage": "serverless deploy",
         "deploy-prod": "serverless deploy --stage production"
     },
