@@ -221,7 +221,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/warehouse/production/1643902338756-2022-02-03T15:32:18.756Z/warehouse.zip"
+                "S3Key": "serverless/warehouse/production/1644419911772-2022-02-09T15:18:31.772Z/warehouse.zip"
               },
               "Handler": "s_app.handler",
               "Runtime": "nodejs12.x",
@@ -239,14 +239,14 @@
               "AppLogGroup"
             ]
           },
-          "AppLambdaVersionFmArGdqJFTRTXIWmaOXbwYXiej4ZxcsIjFgfFxu62s": {
+          "AppLambdaVersionLrGcxg0HqrwFHR6omF7BO0UNi0s7h6rvwcdOaBk": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "AppLambdaFunction"
               },
-              "CodeSha256": "UwvcBc4mQ4Dv5g6lDYNjce/1Qj2dvnNMHub3sb76jNc="
+              "CodeSha256": "HhpQwcfnNmJwsnflFKwwvA3/fq4jHsQ4xTX79Fz+R18="
             }
           },
           "ApiGatewayRestApi": {
@@ -464,7 +464,7 @@
               "AppLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1643902318439": {
+          "ApiGatewayDeployment1644419885000": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -625,7 +625,7 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/warehouse/production/1643902338756-2022-02-03T15:32:18.756Z/custom-resources.zip"
+                "S3Key": "serverless/warehouse/production/1644419911772-2022-02-09T15:18:31.772Z/custom-resources.zip"
               },
               "FunctionName": "warehouse-production-custom-resource-apigw-cw-role",
               "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -687,7 +687,7 @@
           "AppLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "AppLambdaVersionFmArGdqJFTRTXIWmaOXbwYXiej4ZxcsIjFgfFxu62s"
+              "Ref": "AppLambdaVersionLrGcxg0HqrwFHR6omF7BO0UNi0s7h6rvwcdOaBk"
             },
             "Export": {
               "Name": "sls-warehouse-production-AppLambdaFunctionQualifiedArn"
@@ -874,7 +874,7 @@
         "timeout": 6,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "AppLambdaVersionFmArGdqJFTRTXIWmaOXbwYXiej4ZxcsIjFgfFxu62s"
+        "versionLogicalId": "AppLambdaVersionLrGcxg0HqrwFHR6omF7BO0UNi0s7h6rvwcdOaBk"
       }
     },
     "configValidationMode": "warn",
@@ -902,7 +902,7 @@
     "artifact": "/Users/brianjenney1/Desktop/apps/warehouse/.serverless/warehouse.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/warehouse/production/1643902338756-2022-02-03T15:32:18.756Z",
+    "artifactDirectoryName": "serverless/warehouse/production/1644419911772-2022-02-09T15:18:31.772Z",
     "artifact": "warehouse.zip"
   }
 }

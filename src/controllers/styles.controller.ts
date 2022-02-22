@@ -3,6 +3,7 @@ import {
     handleErrorResponse,
     throwUnlessValidReq,
     handleSuccessResponse,
+    cacheMe,
 } from '../apiHelpers';
 import { StyleConfigModel, StyleConfig } from '../models/styleConfig';
 import {
@@ -39,13 +40,21 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
                 ? true
                 : false;
 
-        // return early if no subscription
         const pspxSpace: PspxSpace = await PspxSpaceModel.findOne({
             spaceId: spaceid as string,
         });
 
         if (!pspxSpace) {
             handleSuccessResponse(res, { styleConfig: null });
+        }
+
+        //check cache
+        const cachedStyle: StyleConfig = await cacheMe.getValue(
+            `${isDraft ? 'draft' : 'prod'}${spaceid}`
+        );
+
+        if (cachedStyle) {
+            return handleSuccessResponse(res, { styleConfig: cachedStyle });
         }
 
         const styleConfig: StyleConfig = await StyleConfigModel.findOne({
@@ -153,6 +162,11 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
             isActive,
         });
 
+        await cacheMe.setValue(
+            `${isPreview ? 'draft' : 'prod'}${spaceid}`,
+            JSON.stringify(styles)
+        );
+
         handleSuccessResponse(res, { newConfig });
     } catch (e) {
         handleErrorResponse(e, res);
@@ -167,11 +181,29 @@ const toggleActiveState = async (
         throwUnlessValidReq(req.body, ['configId', 'isActive']);
         const { configId, isActive } = req.body;
 
-        await StyleConfigModel.findByIdAndUpdate(configId, {
-            $set: {
-                isActive,
-            },
-        });
+        const styleConfig: StyleConfig =
+            await StyleConfigModel.findByIdAndUpdate(configId, {
+                $set: {
+                    isActive,
+                },
+            });
+
+        const spaceId: string = styleConfig.spaceid;
+
+        const prefix: string = styleConfig.draft ? 'preview' : 'prod';
+
+        const cacheHit = await cacheMe.getValue(`${prefix}${spaceId}`);
+
+        if (cacheHit && !isActive) {
+            await cacheMe.removevalue(`${prefix}${spaceId}`);
+        }
+
+        if (isActive) {
+            await cacheMe.setValue(
+                `${prefix}${spaceId}`,
+                JSON.stringify(styleConfig.styles)
+            );
+        }
 
         handleSuccessResponse(res, {});
     } catch (e) {

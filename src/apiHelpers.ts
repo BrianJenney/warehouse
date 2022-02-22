@@ -1,6 +1,22 @@
 import { Request, Response, NextFunction } from 'express';
 import { PspxSpaceModel, PspxSpace } from './models/pspxSpace';
 import { Types } from 'mongoose';
+import { createClient } from 'redis';
+import { StyleConfig } from './models/styleConfig';
+import { config } from 'dotenv';
+config();
+
+let client: any;
+
+(async () => {
+    client = createClient({
+        url: `redis://:${process.env.REDIS_PASSWORD}@usw1-glorious-wombat-32784.upstash.io:32784`,
+    });
+
+    client.on('error', (err: string) => console.log('Redis Client Error', err));
+
+    await client.connect();
+})();
 
 const throwUnlessValidReq = (
     reqBody: Record<string, unknown>,
@@ -62,9 +78,31 @@ const handleSuccessResponse = (
     });
 };
 
+const cacheMe = {
+    getValue: async (key: string): Promise<StyleConfig> => {
+        console.log(`Retrieving ${key} from cache`);
+        const val: string = await client.get(key);
+        if (!val) {
+            console.log(`${key} not found in cache`);
+            return;
+        }
+        return JSON.parse(val);
+    },
+    setValue: async (key: string, val: any): Promise<void> => {
+        console.log(`Setting ${key} in cache`);
+        await client.set(key, val);
+    },
+
+    removevalue: async (key: string): Promise<void> => {
+        console.log(`Removing ${key} from cache`);
+        await client.remove(key);
+    },
+};
+
 export {
     throwUnlessValidReq,
     handleErrorResponse,
     handleSuccessResponse,
     addSubscriptionInfo,
+    cacheMe,
 };
