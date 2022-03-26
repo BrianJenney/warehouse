@@ -120,7 +120,6 @@ describe('styles controller', () => {
             expect(configDoc.draft).toEqual(true);
         });
     });
-
     describe('saveDraft', () => {
         beforeEach(async () => {
             await StyleConfigModel.deleteMany({});
@@ -166,6 +165,94 @@ describe('styles controller', () => {
             expect(configDoc._id).toEqual(currentDraft._id);
             expect(configDoc.version).toEqual(oldNonDraft.version + 1);
             expect(versionDoc._id).toEqual(oldNonDraft._id);
+        });
+    });
+    describe('getConfig', () => {
+        beforeEach(async () => {
+            await StyleConfigModel.deleteMany({});
+            await StyleConfigVersionModel.deleteMany({});
+        });
+
+        it('returns only the active config', async () => {
+            const spaceId = '123ABC';
+            const baseConfigDoc: StyleConfig = {
+                spaceid: spaceId,
+                styles: [
+                    {
+                        element: 'p',
+                        styles: ['color: red'],
+                        minWidth: 100,
+                        maxWidth: null,
+                    },
+                ],
+                createdAt: new Date().toDateString(),
+                isActive: false,
+            };
+            const activeConfig = await StyleConfigModel.create({
+                ...baseConfigDoc,
+                isActive: true,
+            });
+
+            await StyleConfigModel.create({
+                ...baseConfigDoc,
+                isActive: false,
+            });
+
+            const draft = await StyleConfigModel.create({
+                ...baseConfigDoc,
+                draft: true,
+            });
+
+            const res = await request(app)
+                .get('/api/styles/getconfig')
+                .query({ spaceid: '123ABC', isPreview: undefined });
+
+            expect(Array.isArray(res.body.styleConfig)).toBeFalsy();
+
+            expect(res.body.styleConfig._id).toEqual(
+                activeConfig._id.toString()
+            );
+
+            const draftRes = await request(app)
+                .get('/api/styles/getconfig')
+                .query({ spaceid: '123ABC', isPreview: true });
+
+            expect(Array.isArray(res.body.styleConfig)).toBeFalsy();
+
+            expect(draftRes.body.styleConfig._id).toEqual(draft._id.toString());
+        });
+
+        it('returns an active config from the cache', async () => {
+            const spaceId = '123DEF';
+            const baseConfigDoc: StyleConfig = {
+                spaceid: spaceId,
+                styles: [
+                    {
+                        element: 'p',
+                        styles: ['color: red'],
+                        minWidth: 100,
+                        maxWidth: null,
+                    },
+                ],
+                createdAt: new Date().toDateString(),
+                isActive: false,
+            };
+            const activeConfig = await StyleConfigModel.create({
+                ...baseConfigDoc,
+                isActive: true,
+            });
+
+            await request(app).post('/api/styles/addconfig').send(activeConfig);
+
+            const res = await request(app)
+                .get('/api/styles/getconfig')
+                .query({ spaceid: '123DEF', isPreview: undefined });
+
+            expect(Array.isArray(res.body.styleConfig)).toBeFalsy();
+
+            expect(res.body.styleConfig._id).toEqual(
+                activeConfig._id.toString()
+            );
         });
     });
 });

@@ -9,13 +9,23 @@ config();
 let client: any;
 
 (async () => {
-    client = createClient({
-        url: `redis://:${process.env.REDIS_PASSWORD}@usw1-glorious-wombat-32784.upstash.io:32784`,
-    });
+    try {
+        client = createClient({
+            url: `redis://:${process.env.REDIS_PASSWORD}@usw1-glorious-wombat-32784.upstash.io:32784`,
+        });
 
-    client.on('error', (err: string) => console.log('Redis Client Error', err));
+        client.on('error', (err: string) => {
+            console.log('Redis Client Error', err);
+            return;
+        });
 
-    await client.connect();
+        if (client.connect) {
+            await client.connect();
+        }
+    } catch (e) {
+        console.log('REDIS CONNECTION ERROR: ', e);
+        throw e;
+    }
 })();
 
 const throwUnlessValidReq = (
@@ -81,21 +91,34 @@ const handleSuccessResponse = (
 const cacheMe = {
     getValue: async (key: string): Promise<StyleConfig> => {
         console.log(`Retrieving ${key} from cache`);
-        const val: string = await client.get(key);
-        if (!val) {
-            console.log(`${key} not found in cache`);
-            return;
+
+        try {
+            const val: string = await client.get(key);
+            if (!val) {
+                console.log(`${key} not found in cache`);
+                return;
+            }
+            return JSON.parse(val);
+        } catch (e) {
+            console.log('REDIS GET VAL ERROR: ', e);
         }
-        return JSON.parse(val);
     },
     setValue: async (key: string, val: any): Promise<void> => {
         console.log(`Setting ${key} in cache`);
-        await client.set(key, val);
+        try {
+            await client.set(key, val);
+        } catch (e) {
+            console.log('REDIS SET VAL ERROR: ', e);
+        }
     },
 
     removevalue: async (key: string): Promise<void> => {
         console.log(`Removing ${key} from cache`);
-        await client.remove(key);
+        try {
+            await client.del(key);
+        } catch (e) {
+            console.log('REDIS REMOVE VAL ERROR: ', e);
+        }
     },
 };
 

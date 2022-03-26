@@ -21,7 +21,7 @@ const createCheckOutSession = async (
 ): Promise<void> => {
     const isProd: boolean = process.env.ENV_VAR === 'PRODUCTION';
     const callBackUrl: string = isProd
-        ? 'https://pspxapp.com/account'
+        ? 'https://www.getcssondemand.com/account'
         : 'http://localhost:3000/account';
     try {
         const { priceId, userId, spaceId } = req.body;

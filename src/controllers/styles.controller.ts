@@ -13,7 +13,6 @@ import {
 import { PspxSpaceModel, PspxSpace } from '../models/pspxSpace';
 
 // move older version to the other schema
-
 const _moveOldConfigAndStoreVersion = async (
     config: StyleConfig
 ): Promise<void> => {
@@ -48,7 +47,7 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
             handleSuccessResponse(res, { styleConfig: null });
         }
 
-        //check cache
+        // //check cache
         const cachedStyle: StyleConfig = await cacheMe.getValue(
             `${isDraft ? 'draft' : 'prod'}${spaceid}`
         );
@@ -126,7 +125,7 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
                 {
                     message: `Account type does not support more than ${process.env.MAX_STYLES} styles`,
                 },
-                res
+                res.status(200)
             );
         }
 
@@ -164,7 +163,7 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
 
         await cacheMe.setValue(
             `${isPreview ? 'draft' : 'prod'}${spaceid}`,
-            JSON.stringify(styles)
+            JSON.stringify(newConfig)
         );
 
         handleSuccessResponse(res, { newConfig });
@@ -201,7 +200,7 @@ const toggleActiveState = async (
         if (isActive) {
             await cacheMe.setValue(
                 `${prefix}${spaceId}`,
-                JSON.stringify(styleConfig.styles)
+                JSON.stringify(styleConfig)
             );
         }
 
