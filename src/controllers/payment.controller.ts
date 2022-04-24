@@ -79,6 +79,10 @@ const handlePayments = async (req: Request, res: Response): Promise<void> => {
     if (!eventObject) {
         handleErrorResponse({}, res);
     }
+
+    if (!eventObject?.data?.object?.metadata?.spaceId) {
+        handleSuccessResponse(res, {});
+    }
     // Handle the event
     switch (eventObject.type) {
         case 'payment_intent.succeeded':
