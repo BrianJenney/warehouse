@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { Types } from 'mongoose';
 import {
     handleErrorResponse,
     throwUnlessValidReq,
@@ -47,7 +48,7 @@ const getConfig = async (req: Request, res: Response): Promise<void> => {
             handleSuccessResponse(res, { styleConfig: null });
         }
 
-        // //check cache
+        // check cache
         const cachedStyle: StyleConfig = await cacheMe.getValue(
             `${isDraft ? 'draft' : 'prod'}${spaceid}`
         );
@@ -114,6 +115,44 @@ const saveDraft = async (req: Request, res: Response): Promise<void> => {
     }
 };
 
+const activateOldVersion = async (
+    req: Request,
+    res: Response
+): Promise<void> => {
+    try {
+        throwUnlessValidReq(req.body, ['spaceid', 'configId']);
+        const { spaceid, configId } = req.body;
+
+        const versionToActivate: StyleConfigVersion =
+            await StyleConfigVersionModel.findById(Types.ObjectId(configId));
+
+        const currentConfigs: StyleConfig[] = await StyleConfigModel.find({});
+
+        const nonDraft: StyleConfig = currentConfigs.find((c) => !c.draft);
+        const draft: StyleConfig = currentConfigs.find((c) => c.draft);
+        const maxVersion: number = Math.max(
+            nonDraft?.version || 1,
+            draft?.version || 1
+        );
+
+        if (nonDraft) {
+            _moveOldConfigAndStoreVersion(nonDraft);
+        }
+
+        const styleConfig: StyleConfig = await StyleConfigModel.create({
+            spaceid,
+            styles: versionToActivate.styles,
+            draft: false,
+            version: maxVersion + 1,
+            isActive: true,
+        });
+
+        handleSuccessResponse(res, { styleConfig });
+    } catch (e) {
+        handleErrorResponse(e, res);
+    }
+};
+
 const addConfig = async (req: Request, res: Response): Promise<void> => {
     try {
         throwUnlessValidReq(req.body, ['spaceid', 'styles']);
@@ -129,22 +168,23 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
             );
         }
 
-        const oldStyle: StyleConfig = await StyleConfigModel.findOne({
+        // there will only be 1 draft or active model per space
+        const currentActiveStyle: StyleConfig = await StyleConfigModel.findOne({
             spaceid,
             draft: false,
         });
 
-        const oldPreview: StyleConfig = await StyleConfigModel.findOne({
+        const currentPreview: StyleConfig = await StyleConfigModel.findOne({
             spaceid,
             draft: true,
         });
 
-        if (oldStyle && !isPreview) {
-            await _moveOldConfigAndStoreVersion(oldStyle);
+        if (currentActiveStyle && !isPreview) {
+            await _moveOldConfigAndStoreVersion(currentActiveStyle);
         }
 
-        if (oldPreview && isPreview) {
-            await StyleConfigModel.findByIdAndUpdate(oldPreview._id, {
+        if (currentPreview && isPreview) {
+            await StyleConfigModel.findByIdAndUpdate(currentPreview._id, {
                 styles,
                 isActive,
             });
@@ -157,7 +197,9 @@ const addConfig = async (req: Request, res: Response): Promise<void> => {
             spaceid,
             styles,
             draft: isPreview,
-            version: oldStyle ? (oldStyle.version || 1) + 1 : 1,
+            version: currentActiveStyle
+                ? (currentActiveStyle.version || 1) + 1
+                : 1,
             isActive,
         });
 
@@ -210,4 +252,11 @@ const toggleActiveState = async (
     }
 };
 
-export { getAllConfigs, getConfig, addConfig, saveDraft, toggleActiveState };
+export {
+    getAllConfigs,
+    getConfig,
+    addConfig,
+    saveDraft,
+    activateOldVersion,
+    toggleActiveState,
+};

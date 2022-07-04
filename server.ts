@@ -35,6 +35,7 @@ app.use((req, res, next) => {
         express.json({ limit: '50mb' })(req, res, next);
     }
 });
+
 app.use(allRoutes);
 
 if (process.env.NODE_ENV !== 'test') {

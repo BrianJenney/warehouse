@@ -207,7 +207,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/production/1648325913644-2022-03-26T20:18:33.644Z/warehouse.zip"
+          "S3Key": "serverless/warehouse/production/1650838991524-2022-04-24T22:23:11.524Z/warehouse.zip"
         },
         "Handler": "s_app.handler",
         "Runtime": "nodejs12.x",
@@ -225,14 +225,14 @@
         "AppLogGroup"
       ]
     },
-    "AppLambdaVersiontw2rSnS1PoFnKDQ630AJc1TYUVwUhFKYarNo5L6OI0": {
+    "AppLambdaVersionrYHFRv74earSgvJAztskMxLY2wKTuZxHJT8tWnAbvos": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "AppLambdaFunction"
         },
-        "CodeSha256": "Sha2VnOeRokSmL2zu5p5lkBMVCyiZRE1AC4iX9yM2Uw="
+        "CodeSha256": "aZagcH+x8rU0S1p5QEi8D2pVzS+f+/4FVQtJLoB3T60="
       }
     },
     "ApiGatewayRestApi": {
@@ -450,7 +450,7 @@
         "AppLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1648325887577": {
+    "ApiGatewayDeployment1650838960053": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -611,7 +611,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/warehouse/production/1648325913644-2022-03-26T20:18:33.644Z/custom-resources.zip"
+          "S3Key": "serverless/warehouse/production/1650838991524-2022-04-24T22:23:11.524Z/custom-resources.zip"
         },
         "FunctionName": "warehouse-production-custom-resource-apigw-cw-role",
         "Handler": "apiGatewayCloudWatchRole/handler.handler",
@@ -673,7 +673,7 @@
     "AppLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "AppLambdaVersiontw2rSnS1PoFnKDQ630AJc1TYUVwUhFKYarNo5L6OI0"
+        "Ref": "AppLambdaVersionrYHFRv74earSgvJAztskMxLY2wKTuZxHJT8tWnAbvos"
       },
       "Export": {
         "Name": "sls-warehouse-production-AppLambdaFunctionQualifiedArn"

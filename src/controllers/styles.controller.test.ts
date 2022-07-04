@@ -30,6 +30,7 @@ describe('styles controller', () => {
             users: [],
         });
     });
+
     describe('addConfig', () => {
         beforeEach(async () => {
             await StyleConfigModel.deleteMany({});
@@ -221,37 +222,108 @@ describe('styles controller', () => {
 
             expect(draftRes.body.styleConfig._id).toEqual(draft._id.toString());
         });
-
-        it('returns an active config from the cache', async () => {
-            const spaceId = '123DEF';
-            const baseConfigDoc: StyleConfig = {
+    });
+    describe('activateOldVersion', () => {
+        let versionId: string | undefined;
+        const currentVersion = 3;
+        const inactiveVersion = 1;
+        beforeEach(async () => {
+            await StyleConfigModel.deleteMany({});
+            await StyleConfigVersionModel.deleteMany({});
+            await StyleConfigModel.create({
                 spaceid: spaceId,
+                version: currentVersion,
                 styles: [
                     {
                         element: 'p',
                         styles: ['color: red'],
                         minWidth: 100,
-                        maxWidth: null,
                     },
                 ],
                 createdAt: new Date().toDateString(),
                 isActive: false,
-            };
-            const activeConfig = await StyleConfigModel.create({
-                ...baseConfigDoc,
-                isActive: true,
             });
 
-            await request(app).post('/api/styles/addconfig').send(activeConfig);
+            const configVersion: StyleConfigVersion =
+                await StyleConfigVersionModel.create({
+                    spaceid: spaceId,
+                    version: inactiveVersion,
+                    styles: [
+                        {
+                            element: 'p',
+                            styles: ['color: red'],
+                            minWidth: 100,
+                        },
+                    ],
+                    createdAt: new Date().toDateString(),
+                    isActive: false,
+                });
 
-            const res = await request(app)
-                .get('/api/styles/getconfig')
-                .query({ spaceid: '123DEF', isPreview: undefined });
+            versionId = configVersion._id;
+        });
 
-            expect(Array.isArray(res.body.styleConfig)).toBeFalsy();
+        it('activates an old version', async () => {
+            const res: any = await request(app)
+                .post('/api/styles/activateOldVersion')
+                .send({ configId: versionId, spaceid: spaceId });
 
-            expect(res.body.styleConfig._id).toEqual(
-                activeConfig._id.toString()
+            const [allConfigs, allVersions]: [
+                StyleConfig[],
+                StyleConfigVersion[]
+            ] = await Promise.all([
+                StyleConfigModel.find(),
+                StyleConfigVersionModel.find(),
+            ]);
+
+            expect(allConfigs).toHaveLength(1);
+            expect(allVersions).toHaveLength(2);
+            expect(allConfigs[0].version).toEqual(currentVersion + 1);
+            expect(allVersions.map((v) => v.version).sort()).toEqual([
+                inactiveVersion,
+                currentVersion,
+            ]);
+            expect(res.body.styleConfig.version).toEqual(currentVersion + 1);
+        });
+
+        it('activates an old version with a draft present', async () => {
+            const draftConfig: StyleConfig = await StyleConfigModel.create({
+                spaceid: spaceId,
+                version: currentVersion + 1,
+                styles: [
+                    {
+                        element: 'p',
+                        styles: ['color: red'],
+                        minWidth: 100,
+                    },
+                ],
+                draft: true,
+                createdAt: new Date().toDateString(),
+                isActive: false,
+            });
+
+            const res: any = await request(app)
+                .post('/api/styles/activateOldVersion')
+                .send({ configId: versionId, spaceid: spaceId });
+
+            const [allConfigs, allVersions]: [
+                StyleConfig[],
+                StyleConfigVersion[]
+            ] = await Promise.all([
+                StyleConfigModel.find(),
+                StyleConfigVersionModel.find(),
+            ]);
+
+            expect(allConfigs).toHaveLength(2);
+            expect(allVersions).toHaveLength(2);
+            expect(
+                allConfigs.map((v) => v.version).sort()[allConfigs.length - 1]
+            ).toEqual(draftConfig.version + 1);
+            expect(allVersions.map((v) => v.version).sort()).toEqual([
+                inactiveVersion,
+                currentVersion,
+            ]);
+            expect(res.body.styleConfig.version).toEqual(
+                draftConfig.version + 1
             );
         });
     });

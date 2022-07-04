@@ -7,6 +7,7 @@ interface StyleConfigVersion {
     styles: StyleObject[];
     version: number;
     createdAt: string;
+    isVersion: boolean | true;
 }
 
 const schema = new Schema<StyleConfigVersion>({
